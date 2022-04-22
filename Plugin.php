@@ -322,10 +322,9 @@ $ae=$db->fetchRow($db->select()->from ('table.users')->where ('table.users.uid=?
     {
         $commentAt = new Date($comment->created);
         $commentAt = $commentAt->format('Y-m-d H:i:s');
-        //$commentText = parseBiaoQing(htmlspecialchars($comment->text));
       $commentText = htmlspecialchars($comment->text);
         $content = <<<HTML
-<style type="text/css">.qmbox style, .qmbox script, .qmbox head, .qmbox link, .qmbox meta {display: none !important;}.biaoqing {margin: 0 .25em;vertical-align: bottom;height: 2em;}.emailz{background-color:white;border-top:2px solid #12ADDB;box-shadow:0 1px 3px #AAAAAA;line-height:180%;padding:0 15px 12px;width:500px;margin:35px auto;color:#555555;font-family:'Century Gothic','Trebuchet MS','Hiragino Sans GB',微软雅黑,'Microsoft Yahei',Tahoma,Helvetica,Arial,'SimSun',sans-serif;font-size:14px;}@media(max-width:767px){.emailz{width: 88%;}}</style>
+<style type="text/css">.qmbox style, .qmbox script, .qmbox head, .qmbox link, .qmbox meta {display: none !important;}.emailz{background-color:white;border-top:2px solid #12ADDB;box-shadow:0 1px 3px #AAAAAA;line-height:180%;padding:0 15px 12px;width:500px;margin:35px auto;color:#555555;font-family:'Century Gothic','Trebuchet MS','Hiragino Sans GB',微软雅黑,'Microsoft Yahei',Tahoma,Helvetica,Arial,'SimSun',sans-serif;font-size:14px;}@media(max-width:767px){.emailz{width: 88%;}}</style>
 <div class="emailz">  
 <h2 style="border-bottom:1px solid #DDD;font-size:14px;font-weight:normal;padding:13px 0 10px 8px;"><span style="color: #12ADDB;font-weight: bold;">&gt; </span>在<a style="text-decoration:none;color: #12ADDB;" href="{$comment->permalink}" target="_blank" rel="noopener">《{$comment->title}》</a>中，$desc</h2>
         <div style="padding:0 12px 0 12px;margin-top:18px">  
