@@ -23,6 +23,7 @@ Typecho博客评论邮件提醒
 #### 感谢
 
 [https://gitee.com/HoeXhe/typecho-Comment2Mail](https://gitee.com/HoeXhe/typecho-Comment2Mail)
+
 [https://github.com/typecho-fans/plugins/tree/master/CommentToMail](https://github.com/typecho-fans/plugins/tree/master/CommentToMail)
 
 #### 发信逻辑
