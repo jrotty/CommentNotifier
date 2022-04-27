@@ -16,7 +16,7 @@ use Utils\Helper;
  * typecho 评论通过时发送邮件提醒,要求typecho1.2.o及以上,项目地址<a href="https://github.com/jrotty/CommentNotifier" target="_blank">https://github.com/jrotty/CommentNotifier</a>
  * @package CommentNotifier
  * @author 泽泽社长
- * @version 1.1.2
+ * @version 1.2.0
  * @link http://blog.zezeshe.com
  */
 
@@ -115,6 +115,10 @@ class Plugin implements PluginInterface
         // 收件邮箱
         $adminfrom = new Text('adminfrom', NULL, NULL, _t('站长收件邮箱'), _t('遇到待审核评论或文章作者邮箱为空时，评论提醒会发送到此邮箱地址！'));
         $form->addInput($adminfrom->addRule('required', _t('收件邮箱必填!')));
+        
+                // 收件邮箱
+        $muban = new Text('muban', NULL, NULL, _t('邮件模板选择'), _t('该项请不要在插件设置里填写，请到邮件模板列表页面选择模板启动！'));
+        $form->addInput($muban);$muban->setAttribute('class', 'hidden');
     }
 
     /**
@@ -363,8 +367,8 @@ $ae=$db->fetchRow($db->select()->from ('table.users')->where ('table.users.uid=?
         $Pmail=$ParentInfo['mail'];$Pname=$ParentInfo['author'];$Ptext=$ParentInfo['text'];
         }
         
-        
         $content = self::getTemplate($html);
+        
         $search  = array(
             '{title}',//文章标题
             '{time}',//评论发出时间
@@ -403,24 +407,17 @@ $ae=$db->fetchRow($db->select()->from ('table.users')->where ('table.users.uid=?
     private static function getTemplate($template = 'owner')
     {
         $template .= '.html';
-        $filename = dirname(__FILE__) . '/' . $template;
-
-        if (!file_exists($filename)) {
-        return <<<HTML
-<style type="text/css">.qmbox style, .qmbox script, .qmbox head, .qmbox link, .qmbox meta {display: none !important;}.emailz{background-color:white;border-top:2px solid #12ADDB;box-shadow:0 1px 3px #AAAAAA;line-height:180%;padding:0 15px 12px;width:500px;margin:35px auto;color:#555555;font-family:'Century Gothic','Trebuchet MS','Hiragino Sans GB',微软雅黑,'Microsoft Yahei',Tahoma,Helvetica,Arial,'SimSun',sans-serif;font-size:14px;}@media(max-width:767px){.emailz{width: 88%;}}</style>
-<div class="emailz">  
-<h2 style="border-bottom:1px solid #DDD;font-size:14px;font-weight:normal;padding:13px 0 10px 8px;"><span style="color: #12ADDB;font-weight: bold;">&gt; </span>在<a style="text-decoration:none;color: #12ADDB;" href="{permalink}" target="_blank" rel="noopener">[{title}]</a>文章中有了新的回复</h2>
-        <div style="padding:0 12px 0 12px;margin-top:18px">  
-            <p>时间：<span style="border-bottom:1px dashed #ccc;" t="5" times=" 20:42">{time}</p>  
-            <p style="background-color: #f5f5f5;border: 0px solid #DDD;padding: 10px 15px;margin:18px 0">{commentText}</p>  
-            <p>评论者:<span style="color: #12ADDB;">{author}</span></p>  
-            <p style="background-color: #f5f5f5;border: 0px solid #DDD;padding: 10px 15px;margin:18px 0"> <a href="{mail}" target="_blank" rel="noopener">{mail}</a></p> 
-            <p>您可以点击 <a style="text-decoration:none; color:#12addb" href="{permalink}" target="_blank" rel="noopener">查看回复的完整內容 </a>，欢迎再次光临 <a style="text-decoration:none; color:#12addb" href="{siteUrl}" target="_blank" rel="noopener">{siteTitle}</a>。</p>  
-        </div>  
-</div>
-HTML;
+        $muban=Options::alloc()->plugin('CommentNotifier')->muban;
+        if(!empty($muban)){
+        $filename=dirname(__FILE__) . '/template/'.$muban.'/'.$template;
+        }else{
+        $filename=dirname(__FILE__) . '/default/'.$template;
         }
 
-        return file_get_contents(dirname(__FILE__) . '/' . $template);
+        if (!file_exists($filename)) {//如果模板文件缺失就调用根目录下的default文件夹中用于垫底的模板
+        $filename = dirname(__FILE__) . '/default/' . $template;
+        }
+
+        return file_get_contents($filename);
     }
 }

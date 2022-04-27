@@ -9,15 +9,23 @@ use Widget\Options;
 /** 初始化上下文 */
 $request = $options->request;
 $response = $options->response;
-$current = $request->get('act', 'theme');
-$theme = $request->get('file', 'guest.html');
+$current = $request->get('act', 'index');
+$theme = $request->get('file', 'owner.html');
 $title = '编辑邮件模板 ' . $theme;
+if ($current == 'index'){
+$title = '邮件发信模板';
+}
+
+
 if($request->is('do=editTheme')){
 editTheme($request->edit);  
 }
 function editTheme($file)
-    {
+    {   $muban=\Widget\Options::alloc()->plugin('CommentNotifier')->muban;
         $path = dirname(__FILE__) . '/' . $file;
+        if(!empty($muban)){
+        $path = dirname(__FILE__) .'/template/'. $muban .'/' . $file;
+        }
         if (file_exists($path) && is_writeable($path)) {
             $handle = fopen($path, 'wb');
             if ($handle && fwrite($handle,  \Widget\Options::alloc()->request->content)) {
@@ -51,13 +59,18 @@ class CommentNotifier_Console extends Typecho_Widget
      * @throws Typecho_Widget_Exception
      */
     public function execute()
-    {
+    {   $muban=\Widget\Options::alloc()->plugin('CommentNotifier')->muban;
+        $p='';
+        if(!empty($muban)){
+        $p = '/template/'. $muban ;
+        }
         $this->_dir = dirname(__FILE__);
-        $files = glob($this->_dir . '/*.{html,HTML}', GLOB_BRACE);
-        $this->_currentFile = $this->request->get('file', 'guest.html');
+        $files = glob($this->_dir .$p. '/*.{html,HTML}', GLOB_BRACE);
+
+        $this->_currentFile = $this->request->get('file', 'owner.html');
 
         if (preg_match("/^([_0-9a-z-\.\ ])+$/i", $this->_currentFile)
-            && file_exists($this->_dir . '/' . $this->_currentFile)) {
+            && file_exists($this->_dir .$p. '/' . $this->_currentFile)) {
             foreach ($files as $file) {
                 if (file_exists($file)) {
                     $file = basename($file);
@@ -92,8 +105,12 @@ class CommentNotifier_Console extends Typecho_Widget
      * @return string
      */
     public function currentContent()
-    {
-        return htmlspecialchars(file_get_contents($this->_dir . '/' . $this->_currentFile));
+    {   $muban=\Widget\Options::alloc()->plugin('CommentNotifier')->muban;
+        $p='';
+        if(!empty($muban)){
+        $p = '/template/'. $muban ;
+        }
+        return htmlspecialchars(file_get_contents($this->_dir .$p. '/' . $this->_currentFile));
     }
 
     /**
@@ -103,8 +120,12 @@ class CommentNotifier_Console extends Typecho_Widget
      * @return string
      */
     public function currentIsWriteable()
-    {
-        return is_writeable($this->_dir . '/' . $this->_currentFile);
+    {   $muban=\Widget\Options::alloc()->plugin('CommentNotifier')->muban;
+        $p='';
+        if(!empty($muban)){
+        $p = '/template/'. $muban ;
+        }
+        return is_writeable($this->_dir .$p. '/' . $this->_currentFile);
     }
 
     /**
@@ -128,13 +149,22 @@ class CommentNotifier_Console extends Typecho_Widget
         <div class="row typecho-page-main" role="main">
             <div class="col-mb-12">
                 <ul class="typecho-option-tabs fix-tabs clearfix">
-                    <li class="current"><a href="<?php $options->adminUrl('extending.php?panel=' . CommentNotifier_Plugin::$panel . '&act=theme'); ?>">
+                    <li<?=($current == 'index' ? ' class="current"' : '')?>><a href="<?php $options->adminUrl('extending.php?panel=' . CommentNotifier_Plugin::$panel . '&act=index'); ?>">
+                    <?php _e('模板列表'); ?>
+                    </a></li>
+                    <li<?=($current == 'theme' ? ' class="current"' : '')?>><a href="<?php $options->adminUrl('extending.php?panel=' . CommentNotifier_Plugin::$panel . '&act=theme'); ?>">
                     <?php _e('编辑邮件模板'); ?>
                     </a></li>
                     <li><a href="<?php $options->adminUrl('options-plugin.php?config=CommentNotifier') ?>"><?php _e('插件设置'); ?></a></li>
                 </ul>
             </div>
             
+ <?php if ($current == 'index'): ?>
+ 
+<?php include(dirname(__FILE__).'/themes.php'); ?>
+ 
+ 
+ <?php else: ?>
             <?php 
                 Widget::widget('CommentNotifier_Console')->to($files);
             ?>
@@ -168,16 +198,17 @@ class CommentNotifier_Console extends Typecho_Widget
                     <li>评论者邮箱：{mail}</li>
                     <li>评论楼层链接：{permalink}</li>
                     <li>网站地址：{siteUrl}</li>
-                    <li>网站标题：{siteTitle}</li>
+                    <li>网站标题：{siteTitle}</li><?php if($request->file=='guest.html'): ?>
                     <li>父评论昵称：{Pname}</li>
                     <li>父评论内容：{Ptext}</li>
-                    <li>父评论邮箱：{Pmail}</li>
+                    <li>父评论邮箱：{Pmail}</li><?php endif; ?>
                     <li><strong>文件说明</strong></li>
                     <li>notice.html：待审核评论通知模板</li>
                     <li>owner.html：文章作者邮件提醒模板</li>
                     <li>guest：游客评论回复提醒模板</li>
                 </ul>
             </div>
+<?php endif; ?>
         </div>
     </div>
 </div>
