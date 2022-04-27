@@ -16,7 +16,7 @@ use Utils\Helper;
  * typecho 评论通过时发送邮件提醒,要求typecho1.2.o及以上,项目地址<a href="https://github.com/jrotty/CommentNotifier" target="_blank">https://github.com/jrotty/CommentNotifier</a>
  * @package CommentNotifier
  * @author 泽泽社长
- * @version 1.2.0
+ * @version 1.2.1
  * @link http://blog.zezeshe.com
  */
 
@@ -117,7 +117,7 @@ class Plugin implements PluginInterface
         $form->addInput($adminfrom->addRule('required', _t('收件邮箱必填!')));
         
                 // 收件邮箱
-        $muban = new Text('muban', NULL, NULL, _t('邮件模板选择'), _t('该项请不要在插件设置里填写，请到邮件模板列表页面选择模板启动！'));
+        $muban = new Text('muban', NULL, 'default', _t('邮件模板选择'), _t('该项请不要在插件设置里填写，请到邮件模板列表页面选择模板启动！'));
         $form->addInput($muban);$muban->setAttribute('class', 'hidden');
     }
 
