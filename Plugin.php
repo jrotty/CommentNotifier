@@ -16,7 +16,7 @@ use Utils\Helper;
  * typecho 评论通过时发送邮件提醒,要求typecho1.2.o及以上,项目地址<a href="https://github.com/jrotty/CommentNotifier" target="_blank">https://github.com/jrotty/CommentNotifier</a>
  * @package CommentNotifier
  * @author 泽泽社长
- * @version 1.2.2
+ * @version 1.2.5
  * @link http://blog.zezeshe.com
  */
 
@@ -39,9 +39,10 @@ class Plugin implements PluginInterface
      */
     public static function activate()
     {
-        \Typecho\Plugin::factory('Widget_Feedback')->finishComment = __CLASS__. '::finishComment'; // 前台提交评论完成接口
-        \Typecho\Plugin::factory('Widget_Comments_Edit')->finishComment = __CLASS__. '::finishComment'; // 后台操作评论完成接口
+        \Typecho\Plugin::factory('Widget_Feedback')->finishComment = __CLASS__. '::resendMail'; // 前台提交评论完成接口
+        \Typecho\Plugin::factory('Widget_Comments_Edit')->finishComment = __CLASS__. '::resendMail'; // 后台操作评论完成接口
         \Typecho\Plugin::factory('Widget_Comments_Edit')->mark = __CLASS__. '::mark'; // 后台标记评论状态完成接口
+        \Typecho\Plugin::factory('Widget_Service')->refinishComment = __CLASS__. '::refinishComment';//异步接口
         Helper::addPanel(1, self::$panel, '评论邮件提醒', '评论邮件提醒控制台', 'administrator');
         return _t('请配置邮箱SMTP选项!');
     }
@@ -235,7 +236,7 @@ $ae=$db->fetchRow($db->select()->from ('table.users')->where ('table.users.uid=?
      * @throws Typecho_Plugin_Exception
      * 评论/回复时的回调
      */
-    public static function finishComment($comment)
+    public static function refinishComment($comment)
     {
         $CommentNotifier = Options::alloc()->plugin('CommentNotifier');
         $from = $CommentNotifier->adminfrom; // 站长邮箱
@@ -421,5 +422,10 @@ $ae=$db->fetchRow($db->select()->from ('table.users')->where ('table.users.uid=?
         }
 
         return file_get_contents($filename);
+    }
+    
+    public static function resendMail($comment)
+    {
+        Helper::requestService('refinishComment', $comment);
     }
 }
