@@ -196,12 +196,13 @@ class CommentNotifier_Console extends Typecho_Widget
                     <li>评论内容：{commentText}</li>
                     <li>评论人昵称：{author}</li>
                     <li>评论者邮箱：{mail}</li>
-                    <li>评论楼层链接：{permalink}</li>
-                    <li>网站地址：{siteUrl}</li>
-                    <li>网站标题：{siteTitle}</li><?php if($request->file=='guest.html'): ?>
+                    <li>评论楼层链接：{permalink}</li><?php if($request->file=='guest.html'): ?>
                     <li>父评论昵称：{Pname}</li>
                     <li>父评论内容：{Ptext}</li>
                     <li>父评论邮箱：{Pmail}</li><?php endif; ?>
+                    <li>网站地址：{siteUrl}</li>
+                    <li>网站标题：{siteTitle}</li>
+                    <li>当前模板文件夹路径：{url}</li>
                     <li><strong>文件说明</strong></li>
                     <li>notice.html：待审核评论通知模板</li>
                     <li>owner.html：文章作者邮件提醒模板</li>

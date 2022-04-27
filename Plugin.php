@@ -16,7 +16,7 @@ use Utils\Helper;
  * typecho 评论通过时发送邮件提醒,要求typecho1.2.o及以上,项目地址<a href="https://github.com/jrotty/CommentNotifier" target="_blank">https://github.com/jrotty/CommentNotifier</a>
  * @package CommentNotifier
  * @author 泽泽社长
- * @version 1.2.1
+ * @version 1.2.2
  * @link http://blog.zezeshe.com
  */
 
@@ -368,7 +368,7 @@ $ae=$db->fetchRow($db->select()->from ('table.users')->where ('table.users.uid=?
         }
         
         $content = self::getTemplate($html);
-        
+        $muban=Options::alloc()->plugin('CommentNotifier')->muban;
         $search  = array(
             '{title}',//文章标题
             '{time}',//评论发出时间
@@ -381,6 +381,7 @@ $ae=$db->fetchRow($db->select()->from ('table.users')->where ('table.users.uid=?
             '{Pname}',//父级评论昵称
             '{Ptext}',//父级评论内容
             '{Pmail}',//父级评论邮箱
+            '{url}',//当前模板文件夹路径
         );
         $replace = array(
             $comment->title,
@@ -394,6 +395,7 @@ $ae=$db->fetchRow($db->select()->from ('table.users')->where ('table.users.uid=?
             $Pname,
             $Ptext,
             $Pmail,
+            Options::alloc()->pluginUrl.'/CommentNotifier/template/'.$muban,
         );
 
         $content = str_replace($search, $replace, $content);
