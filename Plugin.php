@@ -424,7 +424,7 @@ class Plugin implements PluginInterface
     private static function getTemplate($template = 'owner')
     {
         $template .= '.html';
-        $templateDir = self::configStr(template, 'default');
+        $templateDir = self::configStr('template', 'default');
         $filePath = dirname(__FILE__) . '/template/' . $templateDir . '/' . $template;
 
         if (!file_exists($filePath)) {//如果模板文件缺失就调用根目录下的default文件夹中用于垫底的模板
