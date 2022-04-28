@@ -16,7 +16,7 @@ use Utils\Helper;
  * typecho 评论通过时发送邮件提醒,要求typecho1.2.o及以上,项目地址<a href="https://github.com/jrotty/CommentNotifier" target="_blank">https://github.com/jrotty/CommentNotifier</a>
  * @package CommentNotifier
  * @author 泽泽社长
- * @version 1.2.5
+ * @version 1.2.6
  * @link http://blog.zezeshe.com
  */
 
@@ -71,6 +71,9 @@ class Plugin implements PluginInterface
         // 记录log
         $log = new Checkbox('log', ['log' => _t('记录日志')], 'log', _t('记录日志'), _t('启用后将当前目录生成一个log.txt 注:目录需有写入权限'));
         $form->addInput($log);
+        
+        $yibu = new Radio('yibu', array('0' => _t('不启用'), '1' => _t('启用'),), '0', _t('是否启用异步提交，异步提交实验中暂时不建议开启！'));
+        $form->addInput($yibu);
 
         $layout = new Layout();
         $layout->html(_t('<h3>邮件服务配置:</h3>'));
@@ -426,6 +429,10 @@ $ae=$db->fetchRow($db->select()->from ('table.users')->where ('table.users.uid=?
     
     public static function resendMail($comment)
     {
+        if(Options::alloc()->plugin('CommentNotifier')->yibu==1){
         Helper::requestService('refinishComment', $comment);
+        }else{
+        self::refinishComment($comment);
+        }
     }
 }
