@@ -1,5 +1,7 @@
 <?php
+
 namespace TypechoPlugin\CommentNotifier;
+
 use Typecho\Plugin\PluginInterface;
 use Typecho\Widget\Helper\Form;
 use Typecho\Widget\Helper\Form\Element\Text;
@@ -30,7 +32,8 @@ use PHPMailer\PHPMailer\Exception;
 class Plugin implements PluginInterface
 {
     /** @var string 控制菜单链接 */
-    public static $panel  = 'CommentNotifier/console.php';
+    public static $panel = 'CommentNotifier/console.php';
+
     /**
      * 激活插件方法,如果激活失败,直接抛出异常
      *
@@ -39,10 +42,10 @@ class Plugin implements PluginInterface
      */
     public static function activate()
     {
-        \Typecho\Plugin::factory('Widget_Feedback')->finishComment = __CLASS__. '::resendMail'; // 前台提交评论完成接口
-        \Typecho\Plugin::factory('Widget_Comments_Edit')->finishComment = __CLASS__. '::resendMail'; // 后台操作评论完成接口
-        \Typecho\Plugin::factory('Widget_Comments_Edit')->mark = __CLASS__. '::mark'; // 后台标记评论状态完成接口
-        \Typecho\Plugin::factory('Widget_Service')->refinishComment = __CLASS__. '::refinishComment';//异步接口
+        \Typecho\Plugin::factory('Widget_Feedback')->finishComment = __CLASS__ . '::resendMail'; // 前台提交评论完成接口
+        \Typecho\Plugin::factory('Widget_Comments_Edit')->finishComment = __CLASS__ . '::resendMail'; // 后台操作评论完成接口
+        \Typecho\Plugin::factory('Widget_Comments_Edit')->mark = __CLASS__ . '::mark'; // 后台标记评论状态完成接口
+        \Typecho\Plugin::factory('Widget_Service')->refinishComment = __CLASS__ . '::refinishComment';//异步接口
         Helper::addPanel(1, self::$panel, '评论邮件提醒', '评论邮件提醒控制台', 'administrator');
         return _t('请配置邮箱SMTP选项!');
     }
@@ -56,14 +59,14 @@ class Plugin implements PluginInterface
      */
     public static function deactivate()
     {
-        Helper::removePanel(1, self::$panel); 
+        Helper::removePanel(1, self::$panel);
     }
 
     /**
      * 获取插件配置面板
      *
      * @access public
-     * @param Typecho_Widget_Helper_Form $form 配置面板
+     * @param Form $form 配置面板
      * @return void
      */
     public static function config(Form $form)
@@ -90,7 +93,7 @@ class Plugin implements PluginInterface
         // 发件邮箱
         $from = new Text('from', NULL, NULL, _t('SMTP邮箱地址'), _t('请填写用于发送邮件的邮箱，一般与SMTP登录用户名一致'));
         $form->addInput($from->addRule('required', _t('发件邮箱必填!')));
-        
+
         // SMTP密码
         $description = _t('一般为邮箱登录密码, 有特殊如: QQ邮箱有独立的SMTP密码. 可参考: ');
         $description .= '<a href="https://service.mail.qq.com/cgi-bin/help?subtype=1&&no=1001256&&id=28" target="_blank">QQ邮箱</a> ';
@@ -119,17 +122,18 @@ class Plugin implements PluginInterface
         // 收件邮箱
         $adminfrom = new Text('adminfrom', NULL, NULL, _t('站长收件邮箱'), _t('遇到待审核评论或文章作者邮箱为空时，评论提醒会发送到此邮箱地址！'));
         $form->addInput($adminfrom->addRule('required', _t('收件邮箱必填!')));
-        
-                // 收件邮箱
-        $muban = new Text('muban', NULL, 'default', _t('邮件模板选择'), _t('该项请不要在插件设置里填写，请到邮件模板列表页面选择模板启动！'));
-        $form->addInput($muban);$muban->setAttribute('class', 'hidden');
+
+        // 模板
+        $template = new Text('template', NULL, 'default', _t('邮件模板选择'), _t('该项请不要在插件设置里填写，请到邮件模板列表页面选择模板启动！'));
+        $template->setAttribute('class', 'hidden');
+        $form->addInput($template);
     }
 
     /**
      * 个人用户的配置面板
      *
      * @access public
-     * @param Typecho_Widget_Helper_Form $form
+     * @param Form $form
      * @return void
      */
     public static function personalConfig(Form $form)
@@ -153,7 +157,7 @@ class Plugin implements PluginInterface
      * @throws Typecho_Db_Exception
      * 获取上级评论人
      */
-    public static function getParent($comment)
+    public static function getParent($comment): array
     {
         $recipients = [];
         $db = Db::get();
@@ -169,28 +173,30 @@ class Plugin implements PluginInterface
         }
         return $recipients;
     }
+
     /**
      * @param $comment
      * @return array
      * @throws Typecho_Db_Exception
      * 获取文章作者邮箱
      */
-    public static function getzuozhe($comment)
+    public static function getAuthor($comment): array
     {
         $CommentNotifier = Options::alloc()->plugin('CommentNotifier');
         $recipients = [];
         $db = Db::get();
-$ae=$db->fetchRow($db->select()->from ('table.users')->where ('table.users.uid=?',$comment->ownerId));
-        if(empty($ae['screenName'])){
-            $ae['screenName']=$CommentNotifier->adminfrom;
+        $ae = $db->fetchRow($db->select()->from('table.users')->where('table.users.uid=?', $comment->ownerId));
+        if (empty($ae['screenName'])) {
+            $ae['screenName'] = $CommentNotifier->adminfrom;
         }
         $recipients = [
-                'name' => $ae['screenName'],
-                'mail' => $ae['mail'],
+            'name' => $ae['screenName'],
+            'mail' => $ae['mail'],
         ];
         // 查询
         return $recipients;
     }
+
     /**
      * @param $comment
      * @param Widget_Comments_Edit $edit
@@ -206,15 +212,15 @@ $ae=$db->fetchRow($db->select()->from ('table.users')->where ('table.users.uid=?
         $from = $CommentNotifier->adminfrom; // 站长邮箱
         // 在后台标记评论状态为[approved 审核通过]时, 发信给上级评论人或作者
         if ($status == 'approved') {
-            $type=0;
+            $type = 0;
             // 如果有上级
             if ($edit->parent > 0) {
-            $recipients[] = self::getParent($edit);//获取上级评论信息
-            $type=1;
-            }else{
-            $recipients[] = self::getzuozhe($edit);//获取作者信息
+                $recipients[] = self::getParent($edit);//获取上级评论信息
+                $type = 1;
+            } else {
+                $recipients[] = self::getAuthor($edit);//获取作者信息
             }
-                        
+
             // 如果自己回复自己的评论, 不做任何操作
             if ($recipients[0]['mail'] == $edit->mail) {
                 return;
@@ -224,10 +230,10 @@ $ae=$db->fetchRow($db->select()->from ('table.users')->where ('table.users.uid=?
                 return;
             }
             //邮箱为空时就不发邮件
-            if(empty($recipients[0]['mail'])){
+            if (empty($recipients[0]['mail'])) {
                 return;
             }
-            
+
             self::sendMail($edit, $recipients, $type);
         }
     }
@@ -247,14 +253,14 @@ $ae=$db->fetchRow($db->select()->from ('table.users')->where ('table.users.uid=?
         $recipients = [];
         // 审核通过
         if ($comment->status == 'approved') {
-            $type=0;//0为无父级评论
+            $type = 0;//0为无父级评论
             // 不需要发信给博主
             if ($comment->authorId != $comment->ownerId && $comment->mail != $from) {
-                $recipients[] = self::getzuozhe($comment);//收到新评论后发送给文章作者
+                $recipients[] = self::getAuthor($comment);//收到新评论后发送给文章作者
             }
             // 如果有上级
             if ($comment->parent > 0) {
-            $type=1;//1为有父级评论
+                $type = 1;//1为有父级评论
                 // 查询上级评论人
                 $parent = self::getParent($comment);//获取上级评论者邮箱
                 // 如果上级是博主和自己回复自己, 不需要发信
@@ -273,10 +279,9 @@ $ae=$db->fetchRow($db->select()->from ('table.users')->where ('table.users.uid=?
     /**
      * @param Widget_Comments_Edit|Widget_Feedback $comment
      * @param array $recipients
-     * @param $desc
-     * @throws Typecho_Plugin_Exception
+     * @param $type
      */
-    private static function sendMail($comment, $recipients, $type)
+    private static function sendMail($comment, array $recipients, $type)
     {
         if (empty($recipients)) return; // 没有收信人
         try {
@@ -302,14 +307,14 @@ $ae=$db->fetchRow($db->select()->from ('table.users')->where ('table.users.uid=?
             foreach ($recipients as $recipient) {
                 $mail->addAddress($recipient['mail'], $recipient['name']); // 发件人
             }
-            if($type==1){
-            $mail->Subject = '你在[' . $comment->title . ']的评论有了新的回复';
-            }elseif ($type==2) {
-            $mail->Subject = '文章《' . $comment->title . '》有条待审评论';
-            }else{
-            $mail->Subject = '你的《' . $comment->title . '》文章有了新的评论';
+            if ($type == 1) {
+                $mail->Subject = '你在[' . $comment->title . ']的评论有了新的回复';
+            } elseif ($type == 2) {
+                $mail->Subject = '文章《' . $comment->title . '》有条待审评论';
+            } else {
+                $mail->Subject = '你的《' . $comment->title . '》文章有了新的评论';
             }
-            
+
             $mail->isHTML(); // 邮件为HTML格式
             // 邮件内容
             $content = self::mailBody($comment, $options, $type);
@@ -327,10 +332,10 @@ $ae=$db->fetchRow($db->select()->from ('table.users')->where ('table.users.uid=?
                         $recipientNames .= $recipient['name'] . ', ';
                         $recipientMails .= $recipient['mail'] . ', ';
                     }
-                    $data  = PHP_EOL . $at .' 发送成功! ';
-                    $data .= ' 发件人:'   . $fromName;
+                    $data = PHP_EOL . $at . ' 发送成功! ';
+                    $data .= ' 发件人:' . $fromName;
                     $data .= ' 发件邮箱:' . $from;
-                    $data .= ' 接收人:'   . $recipientNames;
+                    $data .= ' 接收人:' . $recipientNames;
                     $data .= ' 接收邮箱:' . $recipientMails . PHP_EOL;
                 }
                 $fileName = dirname(__FILE__) . '/log.txt';
@@ -339,41 +344,46 @@ $ae=$db->fetchRow($db->select()->from ('table.users')->where ('table.users.uid=?
 
         } catch (Exception $e) {
             $fileName = dirname(__FILE__) . '/log.txt';
-            $str = "\nerror time: ".date('Y-m-d H:i:s') . "\n";
+            $str = "\nerror time: " . date('Y-m-d H:i:s') . "\n";
             file_put_contents($fileName, $str, FILE_APPEND);
             file_put_contents($fileName, $e, FILE_APPEND);
         }
     }
+
     /**
      * @param $comment
      * @param $options
-     * @param $desc
+     * @param $type
      * @return string
      * 很朴素的邮件风格
      */
-    private static function mailBody($comment, $options, $type)
+    private static function mailBody($comment, $options, $type): string
     {
         $commentAt = new Date($comment->created);
         $commentAt = $commentAt->format('Y-m-d H:i:s');
         $commentText = htmlspecialchars($comment->text);
-        $html='owner';
-        if($type==1){
-        $html='guest';
-        }elseif($type==2){
-        $html='notice';
+        $html = 'owner';
+        if ($type == 1) {
+            $html = 'guest';
+        } elseif ($type == 2) {
+            $html = 'notice';
         }
-        $db=Db::get();
-        $ParentInfo=$db->fetchRow($db->select('author', 'mail', 'text')
-                      ->from('table.comments')
-                      ->where('coid = ?', $comment->parent));
-        $Pmail='';$Pname='';$Ptext='';
-        if(!empty($ParentInfo)){
-        $Pmail=$ParentInfo['mail'];$Pname=$ParentInfo['author'];$Ptext=$ParentInfo['text'];
+        $db = Db::get();
+        $ParentInfo = $db->fetchRow($db->select('author', 'mail', 'text')
+            ->from('table.comments')
+            ->where('coid = ?', $comment->parent));
+        $Pmail = '';
+        $Pname = '';
+        $Ptext = '';
+        if (!empty($ParentInfo)) {
+            $Pmail = $ParentInfo['mail'];
+            $Pname = $ParentInfo['author'];
+            $Ptext = $ParentInfo['text'];
         }
-        
+
         $content = self::getTemplate($html);
-        $muban=Options::alloc()->plugin('CommentNotifier')->muban;
-        $search  = array(
+        $template = Options::alloc()->plugin('CommentNotifier')->template;
+        $search = array(
             '{title}',//文章标题
             '{time}',//评论发出时间
             '{commentText}',//评论内容
@@ -399,34 +409,31 @@ $ae=$db->fetchRow($db->select()->from ('table.users')->where ('table.users.uid=?
             $Pname,
             $Ptext,
             $Pmail,
-            Options::alloc()->pluginUrl.'/CommentNotifier/template/'.$muban,
+            Options::alloc()->pluginUrl . '/CommentNotifier/template/' . $template,
         );
 
-        $content = str_replace($search, $replace, $content);
-        return $content;
+        return str_replace($search, $replace, $content);
     }
 
-    /*
-     * 获取邮件正文模板
-     * $author owner为博主 guest为访客
+    /**
+     * 获取评论模板
+     *
+     * @param template owner 为博主 guest 为访客
+     * @return false|string
      */
     private static function getTemplate($template = 'owner')
     {
         $template .= '.html';
-        $muban=Options::alloc()->plugin('CommentNotifier')->muban;
-        if(!empty($muban)){
-        $filename=dirname(__FILE__) . '/template/'.$muban.'/'.$template;
-        }else{
-        $filename=dirname(__FILE__) . '/default/'.$template;
+        $templateDir = self::configStr(template, 'default');
+        $filePath = dirname(__FILE__) . '/template/' . $templateDir . '/' . $template;
+
+        if (!file_exists($filePath)) {//如果模板文件缺失就调用根目录下的default文件夹中用于垫底的模板
+            $filePath = dirname(__FILE__) . 'template/default/' . $template;
         }
 
-        if (!file_exists($filename)) {//如果模板文件缺失就调用根目录下的default文件夹中用于垫底的模板
-        $filename = dirname(__FILE__) . '/default/' . $template;
-        }
-
-        return file_get_contents($filename);
+        return file_get_contents($filePath);
     }
-    
+
     public static function resendMail($comment)
     {
         if(Options::alloc()->plugin('CommentNotifier')->yibu==1){
@@ -434,5 +441,23 @@ $ae=$db->fetchRow($db->select()->from ('table.users')->where ('table.users.uid=?
         }else{
         self::refinishComment($comment);
         }
+    }
+
+    /**
+     * 从 Widget_Options 对象获取 Typecho 选项值（文本型）
+     * @param string $key 选项 Key
+     * @param mixed $default 默认值
+     * @param string $method 测空值方法
+     * @return string
+     */
+    public static function configStr(string $key, $default = '', string $method = 'empty'): string
+    {
+        $value = Helper::options()->plugin('CommentNotifier')->$key;
+        if ($method === 'empty') {
+            return empty($value) ? $default : $value;
+        } else {
+            return call_user_func($method, $value) ? $default : $value;
+        }
+
     }
 }
