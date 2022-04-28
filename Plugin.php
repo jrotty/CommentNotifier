@@ -75,7 +75,7 @@ class Plugin implements PluginInterface
         $log = new Checkbox('log', ['log' => _t('记录日志')], 'log', _t('记录日志'), _t('启用后将当前目录生成一个log.txt 注:目录需有写入权限'));
         $form->addInput($log);
         
-        $yibu = new Radio('yibu', array('0' => _t('不启用'), '1' => _t('启用'),), '0', _t('是否启用异步提交，异步提交实验中暂时不建议开启！'));
+        $yibu = new Radio('yibu', array('0' => _t('不启用'), '1' => _t('启用'),), '0', _t('异步提交'), _t('默认不启用异步提交，异步提交实验中暂时不建议开启！'));
         $form->addInput($yibu);
 
         $layout = new Layout();
@@ -245,9 +245,10 @@ class Plugin implements PluginInterface
      * @throws Typecho_Plugin_Exception
      * 评论/回复时的回调
      */
-    public static function refinishComment($comment)
+    public static function refinishComment(int $commentId)
     {
         $CommentNotifier = Options::alloc()->plugin('CommentNotifier');
+        $comment = Helper::widgetById('comments', $commentId);
         $from = $CommentNotifier->adminfrom; // 站长邮箱
         $fromName = $CommentNotifier->fromName; // 发件人
         $recipients = [];
@@ -292,7 +293,7 @@ class Plugin implements PluginInterface
             $from = $CommentNotifier->from; // 发件邮箱
             $fromName = $CommentNotifier->fromName; // 发件人
             // Server settings
-            $mail = new PHPMailer(true);
+            $mail = new PHPMailer(false);
             $mail->CharSet = PHPMailer::CHARSET_UTF8;
             $mail->Encoding = PHPMailer::ENCODING_BASE64;
             $mail->isSMTP();
@@ -437,9 +438,9 @@ class Plugin implements PluginInterface
     public static function resendMail($comment)
     {
         if(Options::alloc()->plugin('CommentNotifier')->yibu==1){
-        Helper::requestService('refinishComment', $comment);
+        Helper::requestService('refinishComment', $comment->coid);
         }else{
-        self::refinishComment($comment);
+        self::refinishComment($comment->coid);
         }
     }
 
