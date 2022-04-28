@@ -22,9 +22,9 @@ use Utils\Helper;
  * @link http://blog.zezeshe.com
  */
 
-require dirname(__FILE__) . '/PHPMailer/src/PHPMailer.php';
-require dirname(__FILE__) . '/PHPMailer/src/SMTP.php';
-require dirname(__FILE__) . '/PHPMailer/src/Exception.php';
+require dirname(__FILE__) . '/PHPMailer/PHPMailer.php';
+require dirname(__FILE__) . '/PHPMailer/SMTP.php';
+require dirname(__FILE__) . '/PHPMailer/Exception.php';
 
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
