@@ -18,7 +18,7 @@ use Utils\Helper;
  * typecho 评论通过时发送邮件提醒,要求typecho1.2.0及以上,项目地址<a href="https://github.com/jrotty/CommentNotifier" target="_blank">https://github.com/jrotty/CommentNotifier</a>
  * @package CommentNotifier
  * @author 泽泽社长
- * @version 1.2.6
+ * @version 1.2.7
  * @link http://blog.zezeshe.com
  */
 
@@ -160,17 +160,11 @@ class Plugin implements PluginInterface
     public static function getParent($comment): array
     {
         $recipients = [];
-        $db = Db::get();
-        $widget = Comments::alloc();
-        // 查询
-        $select = $widget->select()->where('coid' . ' = ?', $comment->parent)->limit(1);
-        $parent = $db->fetchRow($select, [$widget, 'push']); // 获取上级评论对象
-        if ($parent && $parent['mail']) {
-            $recipients = [
-                'name' => $parent['author'],
-                'mail' => $parent['mail'],
-            ];
-        }
+        $parent = Helper::widgetById('comments', $comment->parent);
+        $recipients = [
+                'name' => $parent->author,
+                'mail' => $parent->mail,
+                ];
         return $recipients;
     }
 
@@ -245,10 +239,9 @@ class Plugin implements PluginInterface
      * @throws Typecho_Plugin_Exception
      * 评论/回复时的回调
      */
-    public static function refinishComment(int $commentId)
+    public static function refinishComment($comment)
     {
         $CommentNotifier = Options::alloc()->plugin('CommentNotifier');
-        $comment = Helper::widgetById('comments', $commentId);
         $from = $CommentNotifier->adminfrom; // 站长邮箱
         $fromName = $CommentNotifier->fromName; // 发件人
         $recipients = [];
@@ -260,7 +253,7 @@ class Plugin implements PluginInterface
                 $recipients[] = self::getAuthor($comment);//收到新评论后发送给文章作者
             }
             // 如果有上级
-            if ($comment->parent > 0) {
+            if ($comment->parent) {
                 $type = 1;//1为有父级评论
                 // 查询上级评论人
                 $parent = self::getParent($comment);//获取上级评论者邮箱
@@ -369,17 +362,14 @@ class Plugin implements PluginInterface
         } elseif ($type == 2) {
             $html = 'notice';
         }
-        $db = Db::get();
-        $ParentInfo = $db->fetchRow($db->select('author', 'mail', 'text')
-            ->from('table.comments')
-            ->where('coid = ?', $comment->parent));
         $Pmail = '';
         $Pname = '';
         $Ptext = '';
-        if (!empty($ParentInfo)) {
-            $Pmail = $ParentInfo['mail'];
-            $Pname = $ParentInfo['author'];
-            $Ptext = $ParentInfo['text'];
+        if ($comment->parent) {
+            $parent = Helper::widgetById('comments', $comment->parent);
+            $Pmail = $parent->mail;
+            $Pname = $parent->author;
+            $Ptext = $parent->text;
         }
 
         $content = self::getTemplate($html);
@@ -438,9 +428,9 @@ class Plugin implements PluginInterface
     public static function resendMail($comment)
     {
         if(Options::alloc()->plugin('CommentNotifier')->yibu==1){
-        Helper::requestService('refinishComment', $comment->coid);
+        Helper::requestService('refinishComment', $comment);
         }else{
-        self::refinishComment($comment->coid);
+        self::refinishComment($comment);
         }
     }
 
