@@ -180,8 +180,9 @@ class Plugin implements PluginInterface
         $recipients = [];
         $db = Db::get();
         $ae = $db->fetchRow($db->select()->from('table.users')->where('table.users.uid=?', $comment->ownerId));
-        if (empty($ae['screenName'])) {
-            $ae['screenName'] = $CommentNotifier->adminfrom;
+        if (empty($ae['mail'])) {
+            $ae['screenName'] = $CommentNotifier->fromName;
+            $ae['mail'] = $CommentNotifier->adminfrom;
         }
         $recipients = [
             'name' => $ae['screenName'],
