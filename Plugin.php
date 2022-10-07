@@ -15,11 +15,11 @@ use Typecho\Date;
 use Utils\Helper;
 
 /**
- * typecho 评论通过时发送邮件提醒,要求typecho1.2.0及以上,项目地址<a href="https://github.com/jrotty/CommentNotifier" target="_blank">https://github.com/jrotty/CommentNotifier</a>
+ * typecho 评论通过时发送邮件提醒,要求typecho1.2.0及以上
  * @package CommentNotifier
  * @author 泽泽社长
- * @version 1.2.9
- * @link http://blog.zezeshe.com
+ * @version 1.3.0
+ * @link https://github.com/jrotty/CommentNotifier
  */
 
 require dirname(__FILE__) . '/PHPMailer/PHPMailer.php';
