@@ -2,17 +2,17 @@
 
 #### 项目介绍
 
-Typecho博客评论邮件提醒，支持异步回调（异步回调优点就是不影响博客评论提交速度），支持编辑邮件模板，支持第三方开发邮件模板
+Typecho博客评论邮件提醒，支持异步回调（异步回调优点就是不影响博客评论提交速度），支持编辑邮件模板，支持第三方开发邮件模板，发信方式支持SMTP与阿里云邮箱推送
 
 #### 安装教程
 
 - 下载后将压缩包解压到 `/usr/plugins` 目录
 - 文件夹名改为`CommentNotifier`
 - 登录管理后台，激活插件
-- 配置插件 填写SMTP参数
+- 配置插件 填写SMTP参数/阿里云邮箱推送参数
 
 ### 插件升级
-旧版本升级至1.2.5版本需要禁用删除旧版本的文件，然后传新的上去！
+旧版本升级至1.4.0版本需要禁用删除旧版本的文件，然后传新的上去！
 
 #### 软件架构
 
@@ -38,5 +38,5 @@ template文件夹里存放的就是邮件发信模板，大家可以参考内置
 #### 感谢
 
 [https://gitee.com/HoeXhe/typecho-Comment2Mail](https://gitee.com/HoeXhe/typecho-Comment2Mail)
-
 [https://github.com/typecho-fans/plugins/tree/master/CommentToMail](https://github.com/typecho-fans/plugins/tree/master/CommentToMail)
+[https://github.com/ylqjgm/LoveKKComment/](https://github.com/ylqjgm/LoveKKComment/)

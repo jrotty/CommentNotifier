@@ -7,6 +7,7 @@ use Typecho\Widget\Helper\Form;
 use Typecho\Widget\Helper\Form\Element\Text;
 use Typecho\Widget\Helper\Form\Element\Checkbox;
 use Typecho\Widget\Helper\Form\Element\Radio;
+use Typecho\Widget\Helper\Form\Element\Select;
 use Typecho\Widget\Helper\Layout;
 use Widget\Options;
 use Widget\Base\Comments;
@@ -18,7 +19,7 @@ use Utils\Helper;
  * typecho 评论通过时发送邮件提醒,要求typecho1.2.0及以上
  * @package CommentNotifier
  * @author 泽泽社长
- * @version 1.3.0
+ * @version 1.4.0
  * @link https://github.com/jrotty/CommentNotifier
  */
 
@@ -71,6 +72,33 @@ class Plugin implements PluginInterface
      */
     public static function config(Form $form)
     {
+        ?>
+        <style>
+            .aliyun,.smtp{display:none;}
+        </style>
+        <script>
+window.onload = function () {
+if($("#tuisongtype :radio:checked").val()=='aliyun')
+{
+        $('.aliyun').show(); 
+        $('.smtp').hide(); 
+        }else{
+        $('.aliyun').hide(); 
+        $('.smtp').show();  
+}
+$('#tuisongtype input').click(function(){
+if($("#tuisongtype :radio:checked").val()=='aliyun')
+{
+        $('.aliyun').show(); 
+        $('.smtp').hide(); 
+        }else{
+        $('.aliyun').hide(); 
+        $('.smtp').show();  
+}
+     });
+}
+        </script>
+        <?php
         // 记录log
         $log = new Checkbox('log', ['log' => _t('记录日志')], 'log', _t('记录日志'), _t('启用后将当前目录生成一个log.txt 注:目录需有写入权限'));
         $form->addInput($log);
@@ -78,21 +106,25 @@ class Plugin implements PluginInterface
         $yibu = new Radio('yibu', array('0' => _t('不启用'), '1' => _t('启用'),), '0', _t('异步提交'), _t('注意：如你博客使用ajax提交评论请不要开启此项否则可能导致邮件发送不正常！'));
         $form->addInput($yibu);
 
-        $layout = new Layout();
-        $layout->html(_t('<h3>邮件服务配置:</h3>'));
-        $form->addItem($layout);
+        // 发信方式
+        $tuisongtype = new Radio('tuisongtype', array('smtp' => _t('SMTP'), 'aliyun' => _t('阿里云推送')), 'smtp', _t('邮件推送方式'));
+        $form->addInput($tuisongtype);
+        $tuisongtype->setAttribute('id', 'tuisongtype');
 
+        $stmplayout = new Layout();
+        $stmplayout->html(_t('<h3>邮件SMTP服务配置:</h3>'));
+        $form->addItem($stmplayout);
         // SMTP服务地址
         $STMPHost = new Text('STMPHost', NULL, 'smtp.qq.com', _t('SMTP服务器地址'), _t('如:smtp.163.com,smtp.gmail.com,smtp.exmail.qq.com,smtp.sohu.com,smtp.sina.com'));
-        $form->addInput($STMPHost->addRule('required', _t('SMTP服务器地址必填!')));
+        $form->addInput($STMPHost);
 
         // SMTP用户名
         $SMTPUserName = new Text('SMTPUserName', NULL, NULL, _t('SMTP登录用户'), _t('SMTP登录用户名，一般为邮箱地址'));
-        $form->addInput($SMTPUserName->addRule('required', _t('SMTP登录用户必填!')));
+        $form->addInput($SMTPUserName);
 
         // 发件邮箱
         $from = new Text('from', NULL, NULL, _t('SMTP邮箱地址'), _t('请填写用于发送邮件的邮箱，一般与SMTP登录用户名一致'));
-        $form->addInput($from->addRule('required', _t('发件邮箱必填!')));
+        $form->addInput($from);
 
         // SMTP密码
         $description = _t('一般为邮箱登录密码, 有特殊如: QQ邮箱有独立的SMTP密码. 可参考: ');
@@ -101,7 +133,7 @@ class Plugin implements PluginInterface
         $description .= '<a href="https://support.office.com/zh-cn/article/outlook-com-%E7%9A%84-pop%E3%80%81imap-%E5%92%8C-smtp-%E8%AE%BE%E7%BD%AE-d088b986-291d-42b8-9564-9c414e2aa040?ui=zh-CN&rs=zh-CN&ad=CN" target="_blank">Outlook邮箱</a> ';
         $description .= '<a href="http://help.sina.com.cn/comquestiondetail/view/160/" target="_blank">新浪邮箱</a> ';
         $SMTPPassword = new Text('SMTPPassword', NULL, NULL, _t('SMTP登录密码'), $description);
-        $form->addInput($SMTPPassword->addRule('required', _t('SMTP登录密码必填!')));
+        $form->addInput($SMTPPassword);
 
         // 服务器安全模式
         $SMTPSecure = new Radio('SMTPSecure', array('' => _t('无安全加密'), 'ssl' => _t('SSL加密'), 'tls' => _t('TLS加密')), '', _t('SMTP加密模式'));
@@ -110,6 +142,44 @@ class Plugin implements PluginInterface
         // SMTP server port
         $SMTPPort = new Text('SMTPPort', NULL, '25', _t('SMTP服务端口'), _t('默认25 SSL为465 TLS为587'));
         $form->addInput($SMTPPort);
+        $stmplayout->setAttribute('class', 'typecho-option smtp');
+        $STMPHost->setAttribute('class', 'typecho-option smtp');
+        $SMTPUserName->setAttribute('class', 'typecho-option smtp');
+        $from->setAttribute('class', 'typecho-option smtp');
+        $SMTPPassword->setAttribute('class', 'typecho-option smtp');
+        $SMTPSecure->setAttribute('class', 'typecho-option smtp');
+        $SMTPPort->setAttribute('class', 'typecho-option smtp');
+
+
+
+        // 阿里云推送区块
+        $ali_section = new Layout();
+        // 区块标题
+        $ali_section->html('<h2>阿里云推送邮件发送设置</h2>');
+        $form->addItem($ali_section);
+        // 发件邮箱
+        $ali_from = new Text('ali_from', NULL, NULL, _t('阿里云邮箱地址'), _t('请填写用于发送邮件的邮箱'));
+        $form->addInput($ali_from);
+        // 地域选择
+        $ali_region = new Select('ali_region', array('hangzhou' => _t('华东1(杭州)'), 'singapore' => _t('亚太东南1(新加坡)'), 'sydney' => _t('亚太东南2(悉尼)')), NULL, _t('DM接入区域'), _t('请选择您的邮件推送所在服务器区域，请务必选择正确'));
+        $form->addInput($ali_region);
+        // AccessKey ID
+        $ali_accesskey_id = new Text('ali_accesskey_id', NULL, NULL, _t('AccessKey ID'), _t('请填入在阿里云生成的AccessKey ID'));
+        $form->addInput($ali_accesskey_id);
+        // Access Key Secret
+        $ali_accesskey_secret = new Text('ali_accesskey_secret', NULL, NULL, _t('Access Key Secret'), _t('请填入在阿里云生成的Access Key Secret'));
+        $form->addInput($ali_accesskey_secret);
+        $ali_section->setAttribute('class', 'typecho-option aliyun');
+        $ali_region->setAttribute('class', 'typecho-option aliyun');
+        $ali_from->setAttribute('class', 'typecho-option aliyun');
+        $ali_accesskey_id->setAttribute('class', 'typecho-option aliyun');
+        $ali_accesskey_secret->setAttribute('class', 'typecho-option aliyun');
+
+
+
+
+
+
 
         $layout = new Layout();
         $layout->html(_t('<h3>邮件信息配置:</h3>'));
@@ -181,8 +251,8 @@ class Plugin implements PluginInterface
         $db = Db::get();
         $ae = $db->fetchRow($db->select()->from('table.users')->where('table.users.uid=?', $comment->ownerId));
         if (empty($ae['mail'])) {
-            $ae['screenName'] = $CommentNotifier->fromName;
-            $ae['mail'] = $CommentNotifier->adminfrom;
+            $ae['screenName'] = $plugin->fromName;
+            $ae['mail'] = $plugin->adminfrom;
         }
         $recipients = [
             'name' => $ae['screenName'],
@@ -204,7 +274,7 @@ class Plugin implements PluginInterface
     {
         $recipients = [];
         $CommentNotifier = Options::alloc()->plugin('CommentNotifier');
-        $from = $CommentNotifier->adminfrom; // 站长邮箱
+        $from = $plugin->adminfrom; // 站长邮箱
         // 在后台标记评论状态为[approved 审核通过]时, 发信给上级评论人或作者
         if ($status == 'approved') {
             $type = 0;
@@ -243,8 +313,8 @@ class Plugin implements PluginInterface
     public static function refinishComment($comment)
     {
         $CommentNotifier = Options::alloc()->plugin('CommentNotifier');
-        $from = $CommentNotifier->adminfrom; // 站长邮箱
-        $fromName = $CommentNotifier->fromName; // 发件人
+        $from = $plugin->adminfrom; // 站长邮箱
+        $fromName = $plugin->fromName; // 发件人
         $recipients = [];
         // 审核通过
         if ($comment->status == 'approved') {
@@ -279,36 +349,45 @@ class Plugin implements PluginInterface
     private static function sendMail($comment, array $recipients, $type)
     {
         if (empty($recipients)) return; // 没有收信人
-        try {
             // 获取系统配置选项
             $options = Options::alloc();
-            // 获取插件配置
-            $CommentNotifier = $options->plugin('CommentNotifier');
-            $from = $CommentNotifier->from; // 发件邮箱
-            $fromName = $CommentNotifier->fromName; // 发件人
+            $plugin = $options->plugin('CommentNotifier');
+            if ($type == 1) {
+                $Subject = '你在[' . $comment->title . ']的评论有了新的回复';
+            } elseif ($type == 2) {
+                $Subject = '文章《' . $comment->title . '》有条待审评论';
+            } else {
+                $Subject = '你的《' . $comment->title . '》文章有了新的评论';
+            }
+        if($plugin->tuisongtype=='aliyun'){
+            foreach ($recipients as $recipient) {
+            $param['to']=$recipient['mail']; // 收件地址
+            $param['fromName']=$plugin->fromName; // 发件人名称
+            $param['subject']=$Subject; // 邮件标题
+            $param['html']=self::mailBody($comment, $options, $type); // 邮件内容
+            self::aliyun($param);
+            }
+        }else{
+        try {
+            $from = $plugin->from; // 发件邮箱
+            $fromName = $plugin->fromName; // 发件人
             // Server settings
             $mail = new PHPMailer(false);
             $mail->CharSet = PHPMailer::CHARSET_UTF8;
             $mail->Encoding = PHPMailer::ENCODING_BASE64;
             $mail->isSMTP();
-            $mail->Host = $CommentNotifier->STMPHost; // SMTP 服务地址
+            $mail->Host = $plugin->STMPHost; // SMTP 服务地址
             $mail->SMTPAuth = true; // 开启认证
-            $mail->Username = $CommentNotifier->SMTPUserName; // SMTP 用户名
-            $mail->Password = $CommentNotifier->SMTPPassword; // SMTP 密码
-            $mail->SMTPSecure = $CommentNotifier->SMTPSecure; // SMTP 加密类型 'ssl' or 'tls'.
-            $mail->Port = $CommentNotifier->SMTPPort; // SMTP 端口
+            $mail->Username = $plugin->SMTPUserName; // SMTP 用户名
+            $mail->Password = $plugin->SMTPPassword; // SMTP 密码
+            $mail->SMTPSecure = $plugin->SMTPSecure; // SMTP 加密类型 'ssl' or 'tls'.
+            $mail->Port = $plugin->SMTPPort; // SMTP 端口
 
             $mail->setFrom($from, $fromName);
             foreach ($recipients as $recipient) {
-                $mail->addAddress($recipient['mail'], $recipient['name']); // 发件人
+                $mail->addAddress($recipient['mail'], $recipient['name']); // 收件人
             }
-            if ($type == 1) {
-                $mail->Subject = '你在[' . $comment->title . ']的评论有了新的回复';
-            } elseif ($type == 2) {
-                $mail->Subject = '文章《' . $comment->title . '》有条待审评论';
-            } else {
-                $mail->Subject = '你的《' . $comment->title . '》文章有了新的评论';
-            }
+            $mail->Subject =$Subject;
 
             $mail->isHTML(); // 邮件为HTML格式
             // 邮件内容
@@ -317,7 +396,7 @@ class Plugin implements PluginInterface
             $mail->send();
 
             // 记录日志
-            if ($CommentNotifier->log) {
+            if ($plugin->log) {
                 $at = date('Y-m-d H:i:s');
                 if ($mail->isError()) {
                     $data = $at . ' ' . $mail->ErrorInfo; // 记录发信失败的日志
@@ -343,7 +422,131 @@ class Plugin implements PluginInterface
             file_put_contents($fileName, $str, FILE_APPEND);
             file_put_contents($fileName, $e, FILE_APPEND);
         }
+        }
     }
+
+  
+    /**
+     * 阿里云邮件发送
+     *
+     * @static
+     * @access public
+     *
+     * @param array $param 公共参数
+     *
+     * @return bool|string
+     * @throws Typecho_Plugin_Exception
+     */
+    static public function aliyun($param)
+    {   // 获取系统配置选项
+        $options = Options::alloc();
+        // 获取插件配置
+        $plugin = $options->plugin('CommentNotifier');
+        // 判断当前请求区域
+        switch ( $plugin->ali_region ) {
+            case 'hangzhou': // 杭州
+                // API地址
+                $param['api'] = 'https://dm.aliyuncs.com/';
+                // API版本号
+                $param['version'] = '2015-11-23';
+                // 机房信息
+                $param['region'] = 'cn-hangzhou';
+                break;
+            case 'singapore': // 新加坡
+                // API地址
+                $param['api'] = 'https://dm.ap-southeast-1.aliyuncs.com/';
+                 // API版本号
+                $param['version'] = '2017-06-22';
+                 // 机房信息
+                $param['region'] = 'ap-southeast-1';
+                break;
+            case 'sydney': // 悉尼
+                // API地址
+                $param['api'] = 'https://dm.ap-southeast-2.aliyuncs.com/';
+                // API版本号
+                $param['version'] = '2017-06-22';
+                // 机房信息
+                $param['region'] = 'ap-southeast-2';
+                break;
+            }
+        // 重新组合为阿里云所使用的参数
+        $data = array(
+            'Action' => 'SingleSendMail', // 操作接口名
+            'AccountName' => $plugin->ali_from, // 发件地址
+            'ReplyToAddress' => "true", // 回信地址
+            'AddressType' => 1, // 地址类型
+            'ToAddress' => $param['to'], // 收件地址
+            'FromAlias' => $param['fromName'], // 发件人名称
+            'Subject' => $param['subject'], // 邮件标题
+            'HtmlBody' => $param['html'], // 邮件内容
+            'Format' => 'JSON', // 返回JSON
+            'Version' => $param['version'], // API版本号
+            'AccessKeyId' => $plugin->ali_accesskey_id, // Access Key ID
+            'SignatureMethod' => 'HMAC-SHA1', // 签名方式
+            'Timestamp' => gmdate('Y-m-d\TH:i:s\Z'), // 请求时间
+            'SignatureVersion' => '1.0', // 签名算法版本
+            'SignatureNonce' => md5(time()), // 唯一随机数
+            'RegionId' => $param['region'] // 机房信息
+        );
+        // 请求签名
+        $data['Signature'] = self::sign($data, $plugin->ali_accesskey_secret);
+        // 初始化Curl
+        $ch = curl_init();
+        // 设置为POST请求
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'POST');
+        // 请求地址
+        curl_setopt($ch, CURLOPT_URL, $param['api']);
+        // 返回数据
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+        // 提交参数
+        curl_setopt($ch, CURLOPT_POSTFIELDS, self::getPostHttpBody($data));
+        // 关闭ssl验证
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
+        // 执行请求
+        $result = curl_exec($ch);
+        // 获取错误代码
+        $errno = curl_errno($ch);
+        // 获取错误信息
+        $error = curl_error($ch);
+        // 获取返回状态码
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        // 关闭请求
+        curl_close($ch);
+        // 成功标识
+        $flag = TRUE;
+        // 如果开启了Debug
+        if ($plugin->log) {
+            // 记录时间
+            $log = '[Aliyun] ' . date('Y-m-d H:i:s') . ': ' . PHP_EOL;
+            // 如果失败
+            if ( $errno ) {
+                // 设置失败
+                $flag = FALSE;
+                $log .= _t('邮件发送失败, 错误代码：' . $errno . '，错误提示: ' . $error . PHP_EOL);
+            }
+            // 如果失败
+            if ( 400 <= $httpCode ) {
+                // 设置失败
+                $flag = FALSE;
+                // 尝试转换json
+                if ( $json = json_decode($result) ) {
+                    $log .= _t('邮件发送失败，错误代码：' . $json->Code . '，错误提示：' . $json->Message . PHP_EOL);
+                } else {
+                    $log .= _t('邮件发送失败, 请求返回HTTP Code：' . $httpCode . PHP_EOL);
+                }
+            }
+            // 记录返回值
+            $log .= _t('邮件发送返回数据：' . serialize($result) . PHP_EOL);
+            // 输出分隔
+            $log .= '-------------------------------------------' . PHP_EOL . PHP_EOL . PHP_EOL;
+            // 写入文件
+            file_put_contents(dirname(__FILE__) . '/log.txt', "\n".$log."\n", FILE_APPEND);
+        }
+        // 返回结果
+        return $flag;
+    }
+    
 
     /**
      * @param $comment
@@ -451,5 +654,85 @@ class Plugin implements PluginInterface
             return call_user_func($method, $value) ? $default : $value;
         }
 
+    }
+    
+  /**
+     * 阿里云签名
+     *
+     * @static
+     * @access private
+     *
+     * @param array  $param        签名参数
+     * @param string $accesssecret 秘钥
+     *
+     * @return string
+     */
+    static private function sign($param, $accesssecret)
+    {
+        // 参数排序
+        ksort($param);
+        // 组合基础
+        $stringToSign = 'POST&' . self::percentEncode('/') . '&';
+        // 临时变量
+        $tmp = '';
+        // 循环参数列表
+        foreach ( $param as $k => $v ) {
+            // 组合参数
+            $tmp .= '&' . self::percentEncode($k) . '=' . self::percentEncode($v);
+        }
+        // 去除最后一个&
+        $tmp = trim($tmp, '&');
+        // 组合签名参数
+        $stringToSign = $stringToSign . self::percentEncode($tmp);
+        // 数据签名
+        $signature = base64_encode(hash_hmac('sha1', $stringToSign, $accesssecret . '&', TRUE));
+        // 返回签名
+        return $signature;
+    }
+    
+    /**
+     * 阿里云签名编码转换
+     *
+     * @static
+     * @access private
+     *
+     * @param string $val 要转换的编码
+     *
+     * @return string|string[]|null
+     */
+    static private function percentEncode($val)
+    {
+        // URL编码
+        $res = urlencode($val);
+        // 加号转换为%20
+        $res = preg_replace('/\+/', '%20', $res);
+        // 星号转换为%2A
+        $res = preg_replace('/\*/', '%2A', $res);
+        // %7E转换为~
+        $res = preg_replace('/%7E/', '~', $res);
+        return $res;
+    }
+    
+    /**
+     * 阿里云请求参数组合
+     *
+     * @static
+     * @access private
+     *
+     * @param array $param 发送参数
+     *
+     * @return bool|string
+     */
+    static private function getPostHttpBody($param)
+    {
+        // 空字符串
+        $str = "";
+        // 循环参数
+        foreach ( $param as $k => $v ) {
+            // 组合参数
+            $str .= $k . '=' . urlencode($v) . '&';
+        }
+        // 去除第一个&
+        return substr($str, 0, -1);
     }
 }
