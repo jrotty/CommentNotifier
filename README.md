@@ -38,5 +38,7 @@ template文件夹里存放的就是邮件发信模板，大家可以参考内置
 #### 感谢
 
 [https://gitee.com/HoeXhe/typecho-Comment2Mail](https://gitee.com/HoeXhe/typecho-Comment2Mail)
+
 [https://github.com/typecho-fans/plugins/tree/master/CommentToMail](https://github.com/typecho-fans/plugins/tree/master/CommentToMail)
+
 [https://github.com/ylqjgm/LoveKKComment/](https://github.com/ylqjgm/LoveKKComment/)
