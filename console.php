@@ -137,7 +137,12 @@ class CommentNotifier_Console extends Typecho_Widget
 }
 
 ?>
-
+<style>
+.typecho-theme-list img{
+    width: 100%;
+    object-fit: cover;
+}
+</style>
 <div class="main">
     <div class="body container">
         <div class="typecho-page-title">
