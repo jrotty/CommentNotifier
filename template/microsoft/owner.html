@@ -1,0 +1,66 @@
+<?php
+/**
+ * 微软风格
+ * 
+ * @package 微软
+ * @author 冬天冬天W
+ * @version 1.0.0
+ * @link https://www.iamdt.cn/
+ */
+ ?>
+<div>
+    <includetail>
+        <table
+            style="font-family: Segoe UI, SegoeUIWF, Arial, sans-serif; font-size: 12px; color: #333333; border-spacing: 0px; border-collapse: collapse; padding: 0px; width: 580px; direction: ltr">
+            <tbody>
+                <tr style="background-color: #0078D4">
+                    <td style="padding: 0px">
+                        <table
+                            style="font-family: Segoe UI, SegoeUIWF, Arial, sans-serif; border-spacing: 0px; border-collapse: collapse; width: 100%">
+                            <tbody>
+                                <tr>
+                                    <td style="font-size: 20px; color: #FFFFFF; padding: 12px 22px 4px 22px"
+                                        colspan="3"> {siteTitle}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="font-size: 38px; color: #FFFFFF; padding: 12px 22px 4px 22px"
+                                        colspan="3">
+                                        收到评论
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="font-size: 20px; color: #FFFFFF; padding: 0px 22px 18px 22px"
+                                        colspan="3">
+                                        您在 {siteTitle} 发表的文章有了新的评论！
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
+                <tr>
+                    <td
+                        style="padding: 10px 20px; border-bottom-style: solid; border-bottom-color: #0078D4; border-bottom-width: 4px">
+                        <table
+                            style="font-family: Segoe UI, SegoeUIWF, Arial, sans-serif; font-size: 12px; color: #333333; border-spacing: 0px; border-collapse: collapse; width: 100%">
+                            <div style="margin:40px auto;width:90%">
+
+                                <p>{author} 在您的《<a href="{permalink}" style="text-decoration:none;color:#12addb"
+                                        target="_blank">{title}</a>》上发表评论:</p>
+                                <p
+                                    style="background:#fafafa repeating-linear-gradient(-45deg,#fff,#fff 1.125rem,transparent 1.125rem,transparent 2.25rem);box-shadow:0 2px 5px rgba(0,0,0,.15);margin:20px 0;padding:15px;border-radius:5px;font-size:14px;color:#555">
+                                    {commentText}</p>
+                            </div>
+                            <td style="padding: 0px 0px">
+                                <p>此致</p>
+                                <p><b>{siteTitle}</b>
+                                <p>
+                            </td>
+                        </table>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </includetail>
+</div>
