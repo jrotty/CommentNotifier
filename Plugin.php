@@ -4,22 +4,23 @@ namespace TypechoPlugin\CommentNotifier;
 
 use Typecho\Plugin\PluginInterface;
 use Typecho\Widget\Helper\Form;
-use Typecho\Widget\Helper\Form\Element\Text;
-use Typecho\Widget\Helper\Form\Element\Checkbox;
-use Typecho\Widget\Helper\Form\Element\Radio;
-use Typecho\Widget\Helper\Form\Element\Select;
 use Typecho\Widget\Helper\Layout;
 use Widget\Options;
 use Widget\Base\Comments;
 use Typecho\Db;
 use Typecho\Date;
 use Utils\Helper;
+use Widget\Feedback;
+use Widget\Service;
+use Widget\Comments\Edit;
 
 /**
  * typecho 评论通过时发送邮件提醒,要求typecho1.2.0及以上
+ * 
  * @package CommentNotifier
  * @author 泽泽社长
- * @version 1.4.0
+ * @version 1.4.1
+ * @since 1.2.0
  * @link https://github.com/jrotty/CommentNotifier
  */
 
@@ -43,10 +44,10 @@ class Plugin implements PluginInterface
      */
     public static function activate()
     {
-        \Typecho\Plugin::factory('Widget_Feedback')->finishComment = __CLASS__ . '::resendMail'; // 前台提交评论完成接口
-        \Typecho\Plugin::factory('Widget_Comments_Edit')->finishComment = __CLASS__ . '::resendMail'; // 后台操作评论完成接口
-        \Typecho\Plugin::factory('Widget_Comments_Edit')->mark = __CLASS__ . '::mark'; // 后台标记评论状态完成接口
-        \Typecho\Plugin::factory('Widget_Service')->refinishComment = __CLASS__ . '::refinishComment';//异步接口
+        Feedback::pluginHandle()->finishComment = __CLASS__ . '::resendMail'; // 前台提交评论完成接口
+        Edit::pluginHandle()->finishComment = __CLASS__ . '::resendMail'; // 后台操作评论完成接口
+        Edit::pluginHandle()->mark = __CLASS__ . '::mark'; // 后台标记评论状态完成接口
+        Service::pluginHandle()->refinishComment = __CLASS__ . '::refinishComment';//异步接口
         Helper::addPanel(1, self::$panel, '评论邮件提醒', '评论邮件提醒控制台', 'administrator');
         return _t('请配置邮箱SMTP选项!');
     }
@@ -100,14 +101,14 @@ if($("#tuisongtype :radio:checked").val()=='aliyun')
         </script>
         <?php
         // 记录log
-        $log = new Checkbox('log', ['log' => _t('记录日志')], 'log', _t('记录日志'), _t('启用后将当前目录生成一个log.txt 注:目录需有写入权限'));
+        $log = new Form\Element\Checkbox('log', ['log' => _t('记录日志')], 'log', _t('记录日志'), _t('启用后将当前目录生成一个log.txt 注:目录需有写入权限'));
         $form->addInput($log);
         
-        $yibu = new Radio('yibu', array('0' => _t('不启用'), '1' => _t('启用'),), '0', _t('异步提交'), _t('注意：如你博客使用ajax提交评论请不要开启此项否则可能导致邮件发送不正常！'));
+        $yibu = new Form\Element\Radio('yibu', array('0' => _t('不启用'), '1' => _t('启用'),), '0', _t('异步提交'), _t('注意：如你博客使用ajax提交评论请不要开启此项否则可能导致邮件发送不正常！'));
         $form->addInput($yibu);
 
         // 发信方式
-        $tuisongtype = new Radio('tuisongtype', array('smtp' => _t('SMTP'), 'aliyun' => _t('阿里云推送')), 'smtp', _t('邮件推送方式'));
+        $tuisongtype = new Form\Element\Radio('tuisongtype', array('smtp' => _t('SMTP'), 'aliyun' => _t('阿里云推送')), 'smtp', _t('邮件推送方式'));
         $form->addInput($tuisongtype);
         $tuisongtype->setAttribute('id', 'tuisongtype');
 
@@ -115,15 +116,15 @@ if($("#tuisongtype :radio:checked").val()=='aliyun')
         $stmplayout->html(_t('<h3>邮件SMTP服务配置:</h3>'));
         $form->addItem($stmplayout);
         // SMTP服务地址
-        $STMPHost = new Text('STMPHost', NULL, 'smtp.qq.com', _t('SMTP服务器地址'), _t('如:smtp.163.com,smtp.gmail.com,smtp.exmail.qq.com,smtp.sohu.com,smtp.sina.com'));
+        $STMPHost = new Form\Element\Text('STMPHost', NULL, 'smtp.qq.com', _t('SMTP服务器地址'), _t('如:smtp.163.com,smtp.gmail.com,smtp.exmail.qq.com,smtp.sohu.com,smtp.sina.com'));
         $form->addInput($STMPHost);
 
         // SMTP用户名
-        $SMTPUserName = new Text('SMTPUserName', NULL, NULL, _t('SMTP登录用户'), _t('SMTP登录用户名，一般为邮箱地址'));
+        $SMTPUserName = new Form\Element\Text('SMTPUserName', NULL, NULL, _t('SMTP登录用户'), _t('SMTP登录用户名，一般为邮箱地址'));
         $form->addInput($SMTPUserName);
 
         // 发件邮箱
-        $from = new Text('from', NULL, NULL, _t('SMTP邮箱地址'), _t('请填写用于发送邮件的邮箱，一般与SMTP登录用户名一致'));
+        $from = new Form\Element\Text('from', NULL, NULL, _t('SMTP邮箱地址'), _t('请填写用于发送邮件的邮箱，一般与SMTP登录用户名一致'));
         $form->addInput($from);
 
         // SMTP密码
@@ -132,15 +133,15 @@ if($("#tuisongtype :radio:checked").val()=='aliyun')
         $description .= '<a href="https://mailhelp.aliyun.com/freemail/detail.vm?knoId=6521875" target="_blank">阿里邮箱</a> ';
         $description .= '<a href="https://support.office.com/zh-cn/article/outlook-com-%E7%9A%84-pop%E3%80%81imap-%E5%92%8C-smtp-%E8%AE%BE%E7%BD%AE-d088b986-291d-42b8-9564-9c414e2aa040?ui=zh-CN&rs=zh-CN&ad=CN" target="_blank">Outlook邮箱</a> ';
         $description .= '<a href="http://help.sina.com.cn/comquestiondetail/view/160/" target="_blank">新浪邮箱</a> ';
-        $SMTPPassword = new Text('SMTPPassword', NULL, NULL, _t('SMTP登录密码'), $description);
+        $SMTPPassword = new Form\Element\Text('SMTPPassword', NULL, NULL, _t('SMTP登录密码'), $description);
         $form->addInput($SMTPPassword);
 
         // 服务器安全模式
-        $SMTPSecure = new Radio('SMTPSecure', array('' => _t('无安全加密'), 'ssl' => _t('SSL加密'), 'tls' => _t('TLS加密')), '', _t('SMTP加密模式'));
+        $SMTPSecure = new Form\Element\Radio('SMTPSecure', array('' => _t('无安全加密'), 'ssl' => _t('SSL加密'), 'tls' => _t('TLS加密')), '', _t('SMTP加密模式'));
         $form->addInput($SMTPSecure);
 
         // SMTP server port
-        $SMTPPort = new Text('SMTPPort', NULL, '25', _t('SMTP服务端口'), _t('默认25 SSL为465 TLS为587'));
+        $SMTPPort = new Form\Element\Text('SMTPPort', NULL, '25', _t('SMTP服务端口'), _t('默认25 SSL为465 TLS为587'));
         $form->addInput($SMTPPort);
         $stmplayout->setAttribute('class', 'typecho-option smtp');
         $STMPHost->setAttribute('class', 'typecho-option smtp');
@@ -158,16 +159,16 @@ if($("#tuisongtype :radio:checked").val()=='aliyun')
         $ali_section->html('<h2>阿里云推送邮件发送设置</h2>');
         $form->addItem($ali_section);
         // 发件邮箱
-        $ali_from = new Text('ali_from', NULL, NULL, _t('阿里云邮箱地址'), _t('请填写用于发送邮件的邮箱'));
+        $ali_from = new Form\Element\Text('ali_from', NULL, NULL, _t('阿里云邮箱地址'), _t('请填写用于发送邮件的邮箱'));
         $form->addInput($ali_from);
         // 地域选择
-        $ali_region = new Select('ali_region', array('hangzhou' => _t('华东1(杭州)'), 'singapore' => _t('亚太东南1(新加坡)'), 'sydney' => _t('亚太东南2(悉尼)')), NULL, _t('DM接入区域'), _t('请选择您的邮件推送所在服务器区域，请务必选择正确'));
+        $ali_region = new Form\Element\Select('ali_region', array('hangzhou' => _t('华东1(杭州)'), 'singapore' => _t('亚太东南1(新加坡)'), 'sydney' => _t('亚太东南2(悉尼)')), NULL, _t('DM接入区域'), _t('请选择您的邮件推送所在服务器区域，请务必选择正确'));
         $form->addInput($ali_region);
         // AccessKey ID
-        $ali_accesskey_id = new Text('ali_accesskey_id', NULL, NULL, _t('AccessKey ID'), _t('请填入在阿里云生成的AccessKey ID'));
+        $ali_accesskey_id = new Form\Element\Text('ali_accesskey_id', NULL, NULL, _t('AccessKey ID'), _t('请填入在阿里云生成的AccessKey ID'));
         $form->addInput($ali_accesskey_id);
         // Access Key Secret
-        $ali_accesskey_secret = new Text('ali_accesskey_secret', NULL, NULL, _t('Access Key Secret'), _t('请填入在阿里云生成的Access Key Secret'));
+        $ali_accesskey_secret = new Form\Element\Text('ali_accesskey_secret', NULL, NULL, _t('Access Key Secret'), _t('请填入在阿里云生成的Access Key Secret'));
         $form->addInput($ali_accesskey_secret);
         $ali_section->setAttribute('class', 'typecho-option aliyun');
         $ali_region->setAttribute('class', 'typecho-option aliyun');
@@ -186,15 +187,15 @@ if($("#tuisongtype :radio:checked").val()=='aliyun')
         $form->addItem($layout);
 
         // 发件人姓名
-        $fromName = new Text('fromName', NULL, NULL, _t('发件人姓名'), _t('发件人姓名'));
+        $fromName = new Form\Element\Text('fromName', NULL, NULL, _t('发件人姓名'), _t('发件人姓名'));
         $form->addInput($fromName->addRule('required', _t('发件人姓名必填!')));
 
         // 收件邮箱
-        $adminfrom = new Text('adminfrom', NULL, NULL, _t('站长收件邮箱'), _t('遇到待审核评论或文章作者邮箱为空时，评论提醒会发送到此邮箱地址！'));
+        $adminfrom = new Form\Element\Text('adminfrom', NULL, NULL, _t('站长收件邮箱'), _t('遇到待审核评论或文章作者邮箱为空时，评论提醒会发送到此邮箱地址！'));
         $form->addInput($adminfrom->addRule('required', _t('收件邮箱必填!')));
 
         // 模板
-        $template = new Text('template', NULL, 'default', _t('邮件模板选择'), _t('该项请不要在插件设置里填写，请到邮件模板列表页面选择模板启动！'));
+        $template = new Form\Element\Text('template', NULL, 'default', _t('邮件模板选择'), _t('该项请不要在插件设置里填写，请到邮件模板列表页面选择模板启动！'));
         $template->setAttribute('class', 'hidden');
         $form->addInput($template);
     }
@@ -539,7 +540,7 @@ if($("#tuisongtype :radio:checked").val()=='aliyun')
             // 记录返回值
             $log .= _t('邮件发送返回数据：' . serialize($result) . PHP_EOL);
             // 输出分隔
-            $log .= '-------------------------------------------' . PHP_EOL . PHP_EOL . PHP_EOL;
+            $log .= '-------------------------------------------' . PHP_EOL;
             // 写入文件
             file_put_contents(dirname(__FILE__) . '/log.txt', "\n".$log."\n", FILE_APPEND);
         }
