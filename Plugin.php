@@ -313,7 +313,7 @@ if($("#tuisongtype :radio:checked").val()=='aliyun')
      */
     public static function refinishComment($comment)
     {
-        $CommentNotifier = Options::alloc()->plugin('CommentNotifier');
+        $plugin = Options::alloc()->plugin('CommentNotifier');
         $from = $plugin->adminfrom; // 站长邮箱
         $fromName = $plugin->fromName; // 发件人
         $recipients = [];
