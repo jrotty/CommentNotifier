@@ -19,7 +19,7 @@ use Widget\Comments\Edit;
  * 
  * @package CommentNotifier
  * @author 泽泽社长
- * @version 1.4.1
+ * @version 1.4.2
  * @since 1.2.0
  * @link https://github.com/jrotty/CommentNotifier
  */
@@ -560,7 +560,7 @@ if($("#tuisongtype :radio:checked").val()=='aliyun')
     {
         $commentAt = new Date($comment->created);
         $commentAt = $commentAt->format('Y-m-d H:i:s');
-        $commentText = htmlspecialchars($comment->text);
+        $commentText = $comment->text;
         $html = 'owner';
         if ($type == 1) {
             $html = 'guest';
@@ -577,7 +577,7 @@ if($("#tuisongtype :radio:checked").val()=='aliyun')
             $Ptext = $parent->text;
         }
 
-        $content = self::getTemplate($html);
+        $content = '<style>.biaoqing{display: inline-block;height: 2em;vertical-align: bottom;margin: 0;}</style>'.self::getTemplate($html);
         $template = Options::alloc()->plugin('CommentNotifier')->template;
         $search = array(
             '{title}',//文章标题
