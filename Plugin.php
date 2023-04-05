@@ -48,7 +48,7 @@ class Plugin implements PluginInterface
         Edit::pluginHandle()->finishComment = __CLASS__ . '::resendMail'; // 后台操作评论完成接口
         Edit::pluginHandle()->mark = __CLASS__ . '::mark'; // 后台标记评论状态完成接口
         Service::pluginHandle()->refinishComment = __CLASS__ . '::refinishComment';//异步接口
-        Helper::addPanel(1, self::$panel, '评论邮件提醒', '评论邮件提醒控制台', 'administrator');
+        Helper::addPanel(1, self::$panel, '评论邮件提醒外观', '评论邮件提醒主题列表', 'administrator');
         return _t('请配置邮箱SMTP选项!');
     }
 
