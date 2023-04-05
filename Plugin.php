@@ -19,7 +19,7 @@ use Widget\Comments\Edit;
  * 
  * @package CommentNotifier
  * @author 泽泽社长
- * @version 1.4.2
+ * @version 1.4.3
  * @since 1.2.0
  * @link https://github.com/jrotty/CommentNotifier
  */
@@ -585,6 +585,7 @@ if($("#tuisongtype :radio:checked").val()=='aliyun')
             '{commentText}',//评论内容
             '{author}',//评论人昵称
             '{mail}',//评论者邮箱
+            '{ip}',//评论者ip
             '{permalink}',//评论楼层链接
             '{siteUrl}',//网站地址
             '{siteTitle}',//网站标题
@@ -592,6 +593,7 @@ if($("#tuisongtype :radio:checked").val()=='aliyun')
             '{Ptext}',//父级评论内容
             '{Pmail}',//父级评论邮箱
             '{url}',//当前模板文件夹路径
+            '{manageurl}',//后台管理评论的入口链接
         );
         $replace = array(
             $comment->title,
@@ -599,6 +601,7 @@ if($("#tuisongtype :radio:checked").val()=='aliyun')
             $commentText,
             $comment->author,
             $comment->mail,
+            $comment->ip,
             $comment->permalink,
             $options->siteUrl,
             $options->title,
@@ -606,6 +609,7 @@ if($("#tuisongtype :radio:checked").val()=='aliyun')
             $Ptext,
             $Pmail,
             Options::alloc()->pluginUrl . '/CommentNotifier/template/' . $template,
+            Options::alloc()->adminUrl . '/manage-comments.php',
         );
 
         return str_replace($search, $replace, $content);
