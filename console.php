@@ -206,6 +206,7 @@ class CommentNotifier_Console extends Typecho_Widget
                         <li><?php _e("评论内容：{commentText}"); ?></li>
                         <li><?php _e("评论人昵称：{author}"); ?></li>
                         <li><?php _e("评论者邮箱：{mail}"); ?></li>
+                        <li><?php _e("评论者ip：{ip}"); ?></li>
                         <li><?php _e("评论楼层链接：{permalink}"); ?></li><?php if ($request->file == 'guest.html'): ?>
                             <li><?php _e("父评论昵称：{Pname}"); ?></li>
                             <li><?php _e("父评论内容：{Ptext}"); ?></li>
@@ -213,6 +214,7 @@ class CommentNotifier_Console extends Typecho_Widget
                         <li><?php _e("网站地址：{siteUrl}"); ?></li>
                         <li><?php _e("网站标题：{siteTitle}"); ?></li>
                         <li><?php _e("当前模板文件夹路径：{url}"); ?></li>
+                        <li><?php _e("后台管理评论的入口链接：{manageurl}"); ?></li>
                         <li><strong><?php _e("文件说明"); ?></strong></li>
                         <li><?php _e("notice.html：待审核评论通知模板"); ?></li>
                         <li><?php _e("owner.html：文章作者邮件提醒模板"); ?></li>
