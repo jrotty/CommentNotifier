@@ -577,7 +577,7 @@ if($("#tuisongtype :radio:checked").val()=='aliyun')
             $Ptext = $parent->text;
         }
 
-        $content = '<style>.biaoqing{display: inline-block;height: 2em;vertical-align: bottom;margin: 0;}</style>'.self::getTemplate($html);
+        $content = '<style>.biaoqing{display: inline-block;height: 25px;vertical-align: bottom;margin: 0;}</style>'.self::getTemplate($html);
         $template = Options::alloc()->plugin('CommentNotifier')->template;
         $search = array(
             '{title}',//文章标题
