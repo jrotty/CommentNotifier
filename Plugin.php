@@ -13,13 +13,15 @@ use Utils\Helper;
 use Widget\Base\Comments;
 use Widget\Comments\Edit;
 use Widget\Feedback;
+use Widget\Options;
+use Widget\Service;
 
 /**
  * typecho 评论通过时发送邮件提醒,要求typecho1.2.0及以上
  *
  * @package CommentNotifier
  * @author 泽泽社长
- * @version 1.4.3
+ * @version 1.4.4
  * @since 1.2.0
  * @link https://github.com/jrotty/CommentNotifier
  */
@@ -27,9 +29,6 @@ use Widget\Feedback;
 require dirname(__FILE__) . '/PHPMailer/PHPMailer.php';
 require dirname(__FILE__) . '/PHPMailer/SMTP.php';
 require dirname(__FILE__) . '/PHPMailer/Exception.php';
-
-use Widget\Options;
-use Widget\Service;
 
 class Plugin implements PluginInterface
 {
