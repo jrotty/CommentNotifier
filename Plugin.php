@@ -436,7 +436,7 @@ if($("#tuisongtype :radio:checked").val()=='aliyun')
      * @return bool|string
      * @throws Typecho_Plugin_Exception
      */
-    static public function aliyun($param)
+    public static function aliyun($param)
     {   // 获取系统配置选项
         $options = Options::alloc();
         // 获取插件配置
