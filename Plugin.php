@@ -588,6 +588,11 @@ if($("#tuisongtype :radio:checked").val()=='aliyun')
         
         $content = self::getTemplate($html);
         $template = Options::alloc()->plugin('CommentNotifier')->template;
+        $status = array(
+            "approved" => '通过',
+            "waiting" => '待审',
+            "spam" => '垃圾',
+        );
         $search = array(
             '{title}',//文章标题
             '{time}',//评论发出时间
@@ -603,6 +608,7 @@ if($("#tuisongtype :radio:checked").val()=='aliyun')
             '{Pmail}',//父级评论邮箱
             '{url}',//当前模板文件夹路径
             '{manageurl}',//后台管理评论的入口链接
+            '{status}', //评论状态
         );
         $replace = array(
             $comment->title,
@@ -619,6 +625,7 @@ if($("#tuisongtype :radio:checked").val()=='aliyun')
             $Pmail,
             Options::alloc()->pluginUrl . '/CommentNotifier/template/' . $template,
             Options::alloc()->adminUrl . '/manage-comments.php',
+            $status[$comment->status]
         );
 
         return str_replace($search, $replace, $content);
@@ -681,7 +688,7 @@ if($("#tuisongtype :radio:checked").val()=='aliyun')
      *
      * @return string
      */
-    static private function sign($param, $accesssecret)
+    private static function sign($param, $accesssecret)
     {
         // 参数排序
         ksort($param);
@@ -714,7 +721,7 @@ if($("#tuisongtype :radio:checked").val()=='aliyun')
      *
      * @return string|string[]|null
      */
-    static private function percentEncode($val)
+    private static function percentEncode($val)
     {
         // URL编码
         $res = urlencode($val);
@@ -737,7 +744,7 @@ if($("#tuisongtype :radio:checked").val()=='aliyun')
      *
      * @return bool|string
      */
-    static private function getPostHttpBody($param)
+    private static function getPostHttpBody($param)
     {
         // 空字符串
         $str = "";
