@@ -575,7 +575,7 @@ if($("#tuisongtype :radio:checked").val()=='aliyun')
             $Pname = $parent->author;
             $Ptext = $parent->text;
         }
-        if($plugin->biaoqing&&function_exists($plugin->biaoqing)){//表情函数重载
+        if($plugin->biaoqing&&is_callable($plugin->biaoqing)){//表情函数重载
         $parseBiaoQing = $plugin->biaoqing;
         $commentText = $parseBiaoQing($commentText);
         $Ptext = $parseBiaoQing($Ptext);
