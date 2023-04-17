@@ -21,7 +21,7 @@ use PHPMailer\PHPMailer\Exception;
  * 
  * @package CommentNotifier
  * @author 泽泽社长
- * @version 1.4.6
+ * @version 1.4.7
  * @since 1.2.0
  * @link https://github.com/jrotty/CommentNotifier
  */
@@ -100,8 +100,8 @@ if($("#tuisongtype :radio:checked").val()=='aliyun')
         </script>
         <?php
         // 记录log
-        $log = new Form\Element\Checkbox('log', ['log' => _t('记录日志')], 'log', _t('记录日志'), _t('启用后将当前目录生成一个log.txt 注:目录需有写入权限'));
-        $form->addInput($log);
+        $log = new Form\Element\Checkbox('log', array('ok' => _t('记录日志')), [], _t('记录日志'), _t('启用后将当前目录生成一个log.txt 注:目录需有写入权限'));
+        $form->addInput($log->multiMode());
         
         $yibu = new Form\Element\Radio('yibu', array('0' => _t('不启用'), '1' => _t('启用'),), '0', _t('异步提交'), _t('注意：如你博客使用ajax提交评论请不要开启此项否则可能导致邮件发送不正常！'));
         $form->addInput($yibu);
