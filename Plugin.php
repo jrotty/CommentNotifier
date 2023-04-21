@@ -571,9 +571,10 @@ if($("#tuisongtype :radio:checked").val()=='aliyun')
         $Ptext = '';
         if ($comment->parent) {
             $parent = Helper::widgetById('comments', $comment->parent);
-            $Pmail = $parent->mail;
             $Pname = $parent->author;
             $Ptext = $parent->text;
+            $Pmail = $parent->mail;
+            $Pmd5 = md5($parent->mail);
         }
         if($plugin->biaoqing&&is_callable($plugin->biaoqing)){//表情函数重载
         $parseBiaoQing = $plugin->biaoqing;
@@ -599,6 +600,7 @@ if($("#tuisongtype :radio:checked").val()=='aliyun')
             '{commentText}',//评论内容
             '{author}',//评论人昵称
             '{mail}',//评论者邮箱
+            '{md5}',//评论者邮箱
             '{ip}',//评论者ip
             '{permalink}',//评论楼层链接
             '{siteUrl}',//网站地址
@@ -606,6 +608,7 @@ if($("#tuisongtype :radio:checked").val()=='aliyun')
             '{Pname}',//父级评论昵称
             '{Ptext}',//父级评论内容
             '{Pmail}',//父级评论邮箱
+            '{Pmd5}',//父级评论邮箱md5
             '{url}',//当前模板文件夹路径
             '{manageurl}',//后台管理评论的入口链接
             '{status}', //评论状态
@@ -616,6 +619,7 @@ if($("#tuisongtype :radio:checked").val()=='aliyun')
             $commentText,
             $comment->author,
             $comment->mail,
+            md5($comment->mail),
             $comment->ip,
             $comment->permalink,
             $options->siteUrl,
@@ -623,6 +627,7 @@ if($("#tuisongtype :radio:checked").val()=='aliyun')
             $Pname,
             $Ptext,
             $Pmail,
+            $Pmd5,
             Options::alloc()->pluginUrl . '/CommentNotifier/template/' . $template,
             Options::alloc()->adminUrl . '/manage-comments.php',
             $status[$comment->status]
