@@ -15,6 +15,16 @@ $request = $options->request;
 $response = $options->response;
 $current = $request->get('act', 'index');
 $theme = $request->get('file', 'owner.html');
+$plugin = Options::alloc()->plugin('CommentNotifier');
+
+$name = '当前';
+$othertheme = '';//编辑其他模板
+if(!empty($request->get('theme'))){
+$plugin->template=$request->get('theme');
+$othertheme=$request->get('theme');
+$name = $request->get('theme');
+}
+
 $title = '编辑邮件模板 ' . $theme;
 if ($current == 'index') {
     $title = '邮件发信模板';
@@ -157,7 +167,7 @@ class CommentNotifier_Console extends Typecho_Widget
                         </a></li>
                     <li<?= ($current == 'theme' ? ' class="current"' : '') ?>><a
                             href="<?php $options->adminUrl('extending.php?panel=' . CommentNotifier_Plugin::$panel . '&act=theme'); ?>">
-                            <?php _e('编辑邮件模板'); ?>
+                            <?php _e('编辑'.$name.'邮件模板'); ?>
                         </a></li>
                     <li>
                         <a href="<?php $options->adminUrl('options-plugin.php?config=CommentNotifier') ?>"><?php _e('插件设置'); ?></a>
@@ -197,7 +207,7 @@ class CommentNotifier_Console extends Typecho_Widget
                         <li><strong><?php _e("模板文件"); ?></strong></li>
                         <?php while ($files->next()): ?>
                             <li<?php if ($files->current): ?> class="current"<?php endif; ?>>
-                                <a href="<?php $options->adminUrl('extending.php?panel=' . CommentNotifier_Plugin::$panel . '&act=theme' . '&file=' . $files->file); ?>"><?php $files->file(); ?></a>
+                                <a href="<?php $options->adminUrl('extending.php?panel=' . CommentNotifier_Plugin::$panel . '&act=theme' . '&file=' . $files->file.'&theme='.$othertheme); ?>"><?php $files->file(); ?></a>
                             </li>
                         <?php endwhile; ?>
                         <li><strong><?php _e("参数说明"); ?></strong></li>
