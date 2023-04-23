@@ -202,17 +202,22 @@ class CommentNotifier_Console extends Typecho_Widget
                         <?php endwhile; ?>
                         <li><strong><?php _e("参数说明"); ?></strong></li>
                         <li><?php _e("文章标题：{title}"); ?></li>
+                        <li><?php _e("文章作者昵称：{PostAuthor}"); ?></li>
                         <li><?php _e("评论发出时间：{time}"); ?></li>
                         <li><?php _e("评论内容：{commentText}"); ?></li>
                         <li><?php _e("评论人昵称：{author}"); ?></li>
                         <li><?php _e("评论者邮箱：{mail}"); ?></li>
                         <li><?php _e("评论者邮箱md5：{md5}"); ?></li>
                         <li><?php _e("评论者ip：{ip}"); ?></li>
-                        <li><?php _e("评论楼层链接：{permalink}"); ?></li><?php if ($request->file == 'guest.html'): ?>
+                        <li><?php _e("评论楼层链接：{permalink}"); ?></li>
+                        
+                        <?php if ($request->file == 'guest.html'): ?>
                             <li><?php _e("父评论昵称：{Pname}"); ?></li>
                             <li><?php _e("父评论内容：{Ptext}"); ?></li>
                             <li><?php _e("父评论邮箱：{Pmail}"); ?></li>
-                        <li><?php _e("父评论邮箱md5：{Pmd5}"); ?></li><?php endif; ?>
+                            <li><?php _e("父评论邮箱md5：{Pmd5}"); ?></li>
+                        <?php endif; ?>
+                            
                         <li><?php _e("网站地址：{siteUrl}"); ?></li>
                         <li><?php _e("网站标题：{siteTitle}"); ?></li>
                         <li><?php _e("当前模板文件夹路径：{url}"); ?></li>
