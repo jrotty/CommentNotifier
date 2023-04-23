@@ -21,7 +21,7 @@ use PHPMailer\PHPMailer\Exception;
  * 
  * @package CommentNotifier
  * @author 泽泽社长
- * @version 1.4.7
+ * @version 1.4.8
  * @since 1.2.0
  * @link https://github.com/jrotty/CommentNotifier
  */
@@ -569,6 +569,7 @@ if($("#tuisongtype :radio:checked").val()=='aliyun')
         $Pmail = '';
         $Pname = '';
         $Ptext = '';
+        $Pmd5 = '';
         if ($comment->parent) {
             $parent = Helper::widgetById('comments', $comment->parent);
             $Pname = $parent->author;
@@ -576,6 +577,9 @@ if($("#tuisongtype :radio:checked").val()=='aliyun')
             $Pmail = $parent->mail;
             $Pmd5 = md5($parent->mail);
         }
+        
+        $post=Helper::widgetById('Contents', $comment->cid);
+        
         if($plugin->biaoqing&&is_callable($plugin->biaoqing)){//表情函数重载
         $parseBiaoQing = $plugin->biaoqing;
         $commentText = $parseBiaoQing($commentText);
@@ -596,6 +600,7 @@ if($("#tuisongtype :radio:checked").val()=='aliyun')
         );
         $search = array(
             '{title}',//文章标题
+            '{PostAuthor}',//文章作者昵称
             '{time}',//评论发出时间
             '{commentText}',//评论内容
             '{author}',//评论人昵称
@@ -615,6 +620,7 @@ if($("#tuisongtype :radio:checked").val()=='aliyun')
         );
         $replace = array(
             $comment->title,
+            $post->author->screenName,
             $commentAt,
             $commentText,
             $comment->author,
