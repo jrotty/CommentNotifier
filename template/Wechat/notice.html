@@ -1,0 +1,164 @@
+<style type="text/css">
+#comment2u {
+  font-size: 14px;
+  margin: 0 auto;
+  width: 720px;
+  max-width: 100%;
+  background-color: #eee;
+  border-radius: 3px;
+  -moz-border-radius: 3px;
+  -webkit-border-radius: 3px;
+}
+#comment2u .wrap {
+  padding: 10px 20px;
+}
+#comment2u .header {
+  line-height: 30px;
+  position: relative;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #d6d6d6;
+  background-color: #eee;
+  text-align: center;
+  margin-bottom: 12px;
+}
+#comment2u .body {
+  min-height: 600px;
+}
+
+#comment2u .notice {
+  max-width: 100%;
+  text-align: center;
+  font-size: 12px;
+  margin: 0 auto;
+  padding: 1px 10px;
+  color: #b2b2b2;
+  line-height: 24px;
+}
+#comment2u .notice a {
+  color: #526685;
+  text-decoration: none;
+}
+#comment2u .item {
+  display: flex;
+  margin-bottom: 12px;
+}
+#comment2u .notice {
+  justify-content: center;
+  display: block;
+}
+#comment2u .parent {
+  justify-content: flex-end;
+}
+#comment2u .child {
+  justify-content: flex-start;
+}
+#comment2u .parent .content {
+  background-color: #b2e281;
+}
+#comment2u .child .content {
+  background-color: #ffffff;
+}
+#comment2u .item .avatar img {
+  width: 40px;
+  height: 40px;
+  border-radius: 2px;
+  -moz-border-radius: 2px;
+  -webkit-border-radius: 2px;
+  cursor: pointer;
+}
+#comment2u .child .nick {
+  padding-left: 10px;
+  font-size: 12px;
+  height: 24px;
+  color: #4f4f4f;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  word-wrap: normal;
+}
+#comment2u .parent .nick {
+  text-align: right;
+  padding-right: 10px;
+  font-size: 12px;
+  height: 24px;
+  color: #4f4f4f;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  word-wrap: normal;
+}
+#comment2u .item .content {
+  word-wrap: break-word;
+  word-break: break-all;
+  min-height: 25px;
+  max-width: 500px;
+  min-height: 1em;
+  font-size: 14px;
+  border-radius: 3px;
+  -moz-border-radius: 3px;
+  -webkit-border-radius: 3px;
+  margin: 0 10px;
+  text-align: left;
+  position: relative;
+  padding: 10px 15px;
+}
+#comment2u .parent .arrow {
+  width: 0;
+  height: 0;
+  border-top: 6px solid transparent;
+  border-bottom: 6px solid transparent;
+  border-left: 6px solid;
+  border-left-color: #b2e281;
+  border-right: 0;
+  border-right-color: transparent;
+  right: -6px;
+  left: auto;
+  top: 12px;
+  position: absolute;
+}
+#comment2u .child .arrow {
+  width: 0;
+  height: 0;
+  border-top: 6px solid transparent;
+  border-bottom: 6px solid transparent;
+  border-right: 6px solid;
+  border-right-color: #ffffff;
+  border-left: 0;
+  border-left-color: transparent;
+  right: auto;
+  left: -6px;
+  top: 12px;
+  position: absolute;
+}
+#comment2u .item .content p {
+  margin: 0;
+  line-height: 1.6;
+}    
+</style>
+<meta charset="UTF-8">
+<div id="comment2u">
+  <div class="wrap">
+    <div class="header">{siteTitle}交流群</div>
+    <div class="body">
+      <div class="item notice">
+        "{PostAuthor}"发布了《<a href="{permalink}">{title}</a>》，访客可通过评论加入
+      </div>
+      <div class="item notice">"{author}"通过评论加入了群聊</div>
+      <div class="item notice">{time}</div>
+      <div class="item parent">
+        <div class="scope">
+          <div class="nick">{author}</div>
+          <div class="content">
+            <span class="arrow"></span>
+            <p>{commentText}</p>
+          </div>
+        </div>
+        <div class="avatar">
+          <img src="https://cravatar.cn/avatar/{md5}?d=monsterid&s=40" alt="" />
+        </div>
+      </div>
+      <div class="item notice">该群友发言有待审核，请点击"<a target="_blank" href="{manageurl}">这里</a>"前往审核
+      </div>
+    </div>
+  </div>
+</div>
