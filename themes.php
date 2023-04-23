@@ -90,6 +90,7 @@
 <cite>' . $cite . '</cite>
 <p>' . nl2br($info['description']) . '</p>
 <p>
+<a class="edit" href="' . $options->adminUrl . 'extending.php?panel=' . CommentNotifier_Plugin::$panel . '&act=theme&theme='.$name.'">编辑</a>&nbsp;
 <a class="activate" href="' . $options->adminUrl . 'extending.php?panel=' . CommentNotifier_Plugin::$panel . '&act=index' . '&change=' . $name . '">启用</a>
 </p>
 </td>
