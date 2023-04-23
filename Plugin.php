@@ -245,7 +245,7 @@ if($("#tuisongtype :radio:checked").val()=='aliyun')
      */
     public static function getAuthor($comment): array
     {
-        $CommentNotifier = Options::alloc()->plugin('CommentNotifier');
+        $plugin = Options::alloc()->plugin('CommentNotifier');
         $recipients = [];
         $db = Db::get();
         $ae = $db->fetchRow($db->select()->from('table.users')->where('table.users.uid=?', $comment->ownerId));
