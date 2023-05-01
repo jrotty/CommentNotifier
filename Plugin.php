@@ -103,7 +103,7 @@ if($("#tuisongtype :radio:checked").val()=='aliyun')
         $log = new Form\Element\Checkbox('log', array('ok' => _t('记录日志')), [], _t('记录日志'), _t('启用后将当前目录生成一个log.txt 注:目录需有写入权限'));
         $form->addInput($log->multiMode());
         
-        $yibu = new Form\Element\Radio('yibu', array('0' => _t('不启用'), '1' => _t('启用'),), '0', _t('异步提交'), _t('注意：如你博客使用ajax提交评论请不要开启此项否则可能导致邮件发送不正常！'));
+        $yibu = new Form\Element\Radio('yibu', array('0' => _t('不启用'), '1' => _t('启用'),), '0', _t('异步提交'), _t('<strong class="warning">不推荐开启，开启后表情重载功能可能会失效，AJAX提交评论的主题还会导致邮件内容为空或直接无法发送邮件！</strong>'));
         $form->addInput($yibu);
 
         // 发信方式
@@ -189,7 +189,7 @@ if($("#tuisongtype :radio:checked").val()=='aliyun')
         $form->addInput($adminfrom->addRule('required', _t('收件邮箱必填!')));
         
         // 表情重载函数
-        $biaoqing = new Form\Element\Text('biaoqing', NULL, NULL, _t('支持评论表情'), _t('请填写您博客主题评论表情函数名，如：parseBiaoQing（此项非必填项具体函数名请咨询主题作者，填写后邮件提醒将支持显示表情，更换主题后请同步更换此项内容或者删除此项内容）'));
+        $biaoqing = new Form\Element\Text('biaoqing', NULL, NULL, _t('表情重载'), _t('请填写您博客主题评论表情函数名，如：parseBiaoQing（此项非必填项具体函数名请咨询主题作者，填写后邮件提醒将支持显示表情，更换主题后请同步更换此项内容或者删除此项内容）'));
         $form->addInput($biaoqing);
         
         // 模板
