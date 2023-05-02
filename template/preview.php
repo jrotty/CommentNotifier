@@ -18,7 +18,8 @@ function getTemplate($templateDir = 'default',$template = 'owner.html')
         }
 
 $content=file_get_contents($filePath);
-
+$content=preg_replace('#<\?php#', '<!--', $content);
+$content=preg_replace('#\?>#', '-->', $content);
 $demouser = array(
     array('name' => '月宅', 'md5' => 'bf413cdf4570464b971cb6e0f0a0437a'),
     array('name' => '念', 'md5' => '138be792998aef019362d52276290752'),
