@@ -17,8 +17,8 @@ $current = $request->get('act', 'index');
 $theme = $request->get('file', 'owner.html');
 $plugin = Options::alloc()->plugin('CommentNotifier');
 
-$name = '当前';
-$othertheme = '';//编辑其他模板
+$name = 'default';
+$othertheme = 'default';//编辑其他模板
 if(!empty($request->get('theme'))){
 $plugin->template=$request->get('theme');
 $othertheme=$request->get('theme');
@@ -197,6 +197,7 @@ class CommentNotifier_Console extends Typecho_Widget
                                     <input type="hidden" name="do" value="editTheme"/>
                                     <input type="hidden" name="edit" value="<?php echo $files->currentFile(); ?>"/>
                                     <button type="submit" class="btn primary"><?php _e('保存文件'); ?></button>
+                                    <a href="<?php echo $options->pluginUrl; ?>/CommentNotifier/template/preview.php?file=<?php echo $theme; ?>&theme=<?php echo $othertheme; ?>" target="_blank" id="btn-preview" class="btn" style="align-items: center;display: inline-flex;"><i class="i-exlink"></i> <?php _e('预览模板'); ?></a>
                                 <?php else: ?>
                                     <em><?php _e('此文件无法写入'); ?></em>
                                 <?php endif; ?>
