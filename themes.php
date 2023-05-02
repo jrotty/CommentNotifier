@@ -79,6 +79,10 @@
     <h3>' . $info['title'] . '</h3>
 <cite>' . $cite . '</cite>
 <p>' . nl2br($info['description']) . '</p>
+<p>
+<a class="edit" href="' . $options->adminUrl . 'extending.php?panel=' . CommentNotifier_Plugin::$panel . '&act=theme&theme='.$name.'">编辑</a>&nbsp;
+<a class="activate" href="'.$options->pluginUrl.'/CommentNotifier/template/preview.php?file=owner.html&theme='.$name.'" target="_blank">快速预览</a>
+</p>
 </td>
 </tr>';
                 } else {
@@ -91,7 +95,8 @@
 <p>' . nl2br($info['description']) . '</p>
 <p>
 <a class="edit" href="' . $options->adminUrl . 'extending.php?panel=' . CommentNotifier_Plugin::$panel . '&act=theme&theme='.$name.'">编辑</a>&nbsp;
-<a class="activate" href="' . $options->adminUrl . 'extending.php?panel=' . CommentNotifier_Plugin::$panel . '&act=index' . '&change=' . $name . '">启用</a>
+<a class="activate" href="' . $options->adminUrl . 'extending.php?panel=' . CommentNotifier_Plugin::$panel . '&act=index' . '&change=' . $name . '">启用</a>&nbsp;
+<a class="activate" href="'.$options->pluginUrl.'/CommentNotifier/template/preview.php?file=owner.html&theme='.$name.'" target="_blank">快速预览</a>
 </p>
 </td>
 </tr>';
