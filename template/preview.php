@@ -23,7 +23,9 @@ $demouser = array(
     array('name' => '月宅', 'md5' => 'bf413cdf4570464b971cb6e0f0a0437a'),
     array('name' => '念', 'md5' => '138be792998aef019362d52276290752'),
     array('name' => 'Jochen', 'md5' => '076176b67617855818a00f3e5f963262'),
-    array('name' => '吃猫的鱼', 'md5' => 'e2909ce0b9d612c601733aea588c0097')
+    array('name' => '吃猫的鱼', 'md5' => 'e2909ce0b9d612c601733aea588c0097'),
+    array('name' => '清酒', 'md5' => '60dfa69a58fae040fb0feb753bef1535'),
+    array('name' => '凡涛', 'md5' => 'b8f7b5a08bcba93c2c3eff7b1c5a7c32'),
 );
 
 // 随机选择两个不同的数组元素
