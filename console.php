@@ -167,7 +167,7 @@ class CommentNotifier_Console extends Typecho_Widget
                             <?php _e('模板列表'); ?>
                         </a></li>
                     <li<?= ($current == 'theme' ? ' class="current"' : '') ?>><a
-                            href="<?php $options->adminUrl('extending.php?panel=' . CommentNotifier_Plugin::$panel . '&act=theme'); ?>">
+                            href="<?php $options->adminUrl('extending.php?panel=' . CommentNotifier_Plugin::$panel . '&act=theme&theme='.$othertheme); ?>">
                             <?php _e('编辑'.$name.'邮件模板'); ?>
                         </a></li>
                     <li>
