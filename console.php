@@ -17,8 +17,9 @@ $current = $request->get('act', 'index');
 $theme = $request->get('file', 'owner.html');
 $plugin = Options::alloc()->plugin('CommentNotifier');
 
-$name = 'default';
-$othertheme = 'default';//编辑其他模板
+$name = '当前';
+$othertheme = Plugin::configStr('template', 'default');//编辑其他模板
+
 if(!empty($request->get('theme'))){
 $plugin->template=$request->get('theme');
 $othertheme=$request->get('theme');
