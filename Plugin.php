@@ -592,6 +592,10 @@ if($("#tuisongtype :radio:checked").val()=='aliyun')
         
         
         $content = self::getTemplate($html);
+        
+        $content=preg_replace('#<\?php#', '<!--', $content);
+        $content=preg_replace('#\?>#', '-->', $content);
+        
         $template = Options::alloc()->plugin('CommentNotifier')->template;
         $status = array(
             "approved" => '通过',
