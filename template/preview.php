@@ -18,6 +18,18 @@ function getTemplate($templateDir = 'default',$template = 'owner.html')
         }
 
 $content=file_get_contents($filePath);
+
+$demouser = array(
+    array('name' => '月宅', 'md5' => 'bf413cdf4570464b971cb6e0f0a0437a'),
+    array('name' => '念', 'md5' => '138be792998aef019362d52276290752'),
+    array('name' => 'Jochen', 'md5' => '076176b67617855818a00f3e5f963262'),
+    array('name' => '吃猫的鱼', 'md5' => 'e2909ce0b9d612c601733aea588c0097')
+);
+
+// 随机选择两个不同的数组元素
+$index1 = rand(0, count($demouser) - 1);
+$index2 = array_rand(array_diff_key($demouser, [$index1 => '']));
+
 $search = array(
             '{title}',//文章标题
             '{PostAuthor}',//文章作者昵称
@@ -43,17 +55,17 @@ $search = array(
             '泽泽社长',
             date('Y-m-d H:i:s'),
             '这个插件真好用！',
-            '念',
+            $demouser[$index1]['name'],
             'bssf@qq.com',
-            '138be792998aef019362d52276290752',
+            $demouser[$index1]['md5'],
             '192.168.1.1',
             'https://github.com/jrotty/CommentNotifier',
             'https://blog.zezeshe.com',
             '泽泽社',
-            'Jochen',
+            $demouser[$index2]['name'],
             '这个插件真好用!',
             'zezeshe@foxmail.com',
-            '076176b67617855818a00f3e5f963262',
+            $demouser[$index2]['md5'],
             './' . $templateDir.'/',
             'https://blog.zezeshe.com',
             '通过'
