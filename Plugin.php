@@ -21,7 +21,7 @@ use PHPMailer\PHPMailer\Exception;
  * 
  * @package CommentNotifier
  * @author 泽泽社长
- * @version 1.5.3
+ * @version 1.5.4
  * @since 1.2.0
  * @link https://github.com/jrotty/CommentNotifier
  */
@@ -587,8 +587,11 @@ if($("#tuisongtype :radio:checked").val()=='aliyun')
         }
         
         $style='style="display: inline-block;vertical-align: bottom;margin: 0;" width="30"';//限制表情尺寸
+        
         $commentText=str_replace('class="biaoqing"',$style,$commentText);
         $Ptext=str_replace('class="biaoqing"',$style,$Ptext);
+        $commentText=str_replace('data-emoji',$style,$commentText);
+        $Ptext=str_replace('data-emoji',$style,$Ptext);
         
         
         $content = self::getTemplate($html);
