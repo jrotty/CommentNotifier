@@ -21,7 +21,7 @@ use PHPMailer\PHPMailer\Exception;
  * 
  * @package CommentNotifier
  * @author 泽泽社长
- * @version 1.5.4
+ * @version 1.5.5
  * @since 1.2.0
  * @link https://github.com/jrotty/CommentNotifier
  */
