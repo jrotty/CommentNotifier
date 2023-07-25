@@ -21,11 +21,9 @@ use PHPMailer\PHPMailer\Exception;
  * 
  * @package CommentNotifier
  * @author 泽泽社长
- * @version 1.5.5
- * @since 1.2.0
+ * @version 1.5.6
  * @link https://github.com/jrotty/CommentNotifier
  */
-
 require dirname(__FILE__) . '/PHPMailer/PHPMailer.php';
 require dirname(__FILE__) . '/PHPMailer/SMTP.php';
 require dirname(__FILE__) . '/PHPMailer/Exception.php';
@@ -559,7 +557,7 @@ if($("#tuisongtype :radio:checked").val()=='aliyun')
         $plugin = Options::alloc()->plugin('CommentNotifier');
         $commentAt = new Date($comment->created);
         $commentAt = $commentAt->format('Y-m-d H:i:s');
-        $commentText = $comment->text;
+        $commentText = $comment->content;
         $html = 'owner';
         if ($type == 1) {
             $html = 'guest';
@@ -573,7 +571,7 @@ if($("#tuisongtype :radio:checked").val()=='aliyun')
         if ($comment->parent) {
             $parent = Helper::widgetById('comments', $comment->parent);
             $Pname = $parent->author;
-            $Ptext = $parent->text;
+            $Ptext = $parent->content;
             $Pmail = $parent->mail;
             $Pmd5 = md5($parent->mail);
         }
