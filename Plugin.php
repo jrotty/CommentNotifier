@@ -187,7 +187,7 @@ if($("#tuisongtype :radio:checked").val()=='aliyun')
         $form->addInput($adminfrom->addRule('required', _t('收件邮箱必填!')));
         
         // 表情重载函数
-        $biaoqing = new Form\Element\Text('biaoqing', NULL, NULL, _t('表情重载'), _t('请填写您博客主题评论表情函数名，如：parseBiaoQing（此项非必填项具体函数名请咨询主题作者，填写后邮件提醒将支持显示表情，更换主题后请同步更换此项内容或者删除此项内容）'));
+        $biaoqing = new Form\Element\Text('biaoqing', NULL, NULL, _t('表情重载'), _t('请填写您博客主题评论表情函数名，如：parseBiaoQing（Plain,Sinner,Dinner主题），Mirages::parseBiaoqing（Mirages主题），<br>（此项非必填项具体函数名请咨询主题作者，填写后邮件提醒将支持显示表情，更换主题后请同步更换此项内容或者删除此项内容）'));
         $form->addInput($biaoqing);
         
         // 模板
