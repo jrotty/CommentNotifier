@@ -20,7 +20,7 @@ Typecho博客评论邮件提醒，支持异步回调（异步回调优点就是�
 
 另外我的这些Sinner，Dinner，Plain，Store主题表情回调函数均为：parseBiaoQing ，其他主题回调函数请问下主题作者，部分主题也许会不兼容，这个需要主题作者适配了。
 
-同时`img`标签的`class="biaoqing"`会被插件替换成内置的样式，宽度会被限制为30px
+同时`img`标签的`class="biaoqing"`会被插件替换成内置的样式，宽度会被限制为30px，如果您有多个`class`请这样写`class="biaoqing otherclass"`请保证`biaoqing`处于`class`的最前面
 
 #### 软件架构
 
