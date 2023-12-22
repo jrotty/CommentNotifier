@@ -13,23 +13,19 @@ use Utils\Helper;
 use Widget\Feedback;
 use Widget\Service;
 use Widget\Comments\Edit;
-use PHPMailer\PHPMailer\PHPMailer;
-use PHPMailer\PHPMailer\Exception;
 
 /**
  * typecho 评论通过时发送邮件提醒,要求typecho1.2.0及以上
  * 
  * @package CommentNotifier
  * @author 泽泽社长
- * @version 1.5.6
+ * @version 1.6.0
  * @link https://github.com/jrotty/CommentNotifier
  */
-require dirname(__FILE__) . '/PHPMailer/PHPMailer.php';
-require dirname(__FILE__) . '/PHPMailer/SMTP.php';
-require dirname(__FILE__) . '/PHPMailer/Exception.php';
 
 class Plugin implements PluginInterface
 {
+
     /** @var string 控制菜单链接 */
     public static $panel = 'CommentNotifier/console.php';
 
@@ -41,11 +37,13 @@ class Plugin implements PluginInterface
      */
     public static function activate()
     {
-        Feedback::pluginHandle()->finishComment = __CLASS__ . '::resendMail'; // 前台提交评论完成接口
-        Edit::pluginHandle()->finishComment = __CLASS__ . '::resendMail'; // 后台操作评论完成接口
+        Feedback::pluginHandle()->finishComment = __CLASS__ . '::refinishComment'; // 前台提交评论完成接口
+        Edit::pluginHandle()->finishComment = __CLASS__ . '::refinishComment'; // 后台操作评论完成接口
+        Service::pluginHandle()->send = __CLASS__ . '::send';//异步接口
+        
         Edit::pluginHandle()->mark = __CLASS__ . '::mark'; // 后台标记评论状态完成接口
-        Service::pluginHandle()->refinishComment = __CLASS__ . '::refinishComment';//异步接口
         Helper::addPanel(1, self::$panel, '评论邮件提醒外观', '评论邮件提醒主题列表', 'administrator');
+        Helper::addRoute("zemail","/zemail","CommentNotifier_Action",'action');
         return _t('请配置邮箱SMTP选项!');
     }
 
@@ -59,6 +57,7 @@ class Plugin implements PluginInterface
     public static function deactivate()
     {
         Helper::removePanel(1, self::$panel);
+        Helper::removeRoute("zemail");
     }
 
     /**
@@ -101,7 +100,7 @@ if($("#tuisongtype :radio:checked").val()=='aliyun')
         $log = new Form\Element\Checkbox('log', array('ok' => _t('记录日志')), [], _t('记录日志'), _t('启用后将当前目录生成一个log.txt 注:目录需有写入权限'));
         $form->addInput($log->multiMode());
         
-        $yibu = new Form\Element\Radio('yibu', array('0' => _t('不启用'), '1' => _t('启用'),), '0', _t('异步提交'), _t('<strong class="warning">不推荐开启，开启后表情重载功能可能会失效，AJAX提交评论的主题还会导致邮件内容为空或直接无法发送邮件！</strong>'));
+        $yibu = new Form\Element\Radio('yibu', array('0' => _t('不启用'), '1' => _t('启用'),), '0', _t('异步提交'), _t('异步回调优点就是减小对博客评论提交速度的影响'));
         $form->addInput($yibu);
 
         // 发信方式
@@ -187,13 +186,23 @@ if($("#tuisongtype :radio:checked").val()=='aliyun')
         $form->addInput($adminfrom->addRule('required', _t('收件邮箱必填!')));
         
         // 表情重载函数
-        $biaoqing = new Form\Element\Text('biaoqing', NULL, NULL, _t('表情重载'), _t('请填写您博客主题评论表情函数名，如：parseBiaoQing（Plain,Sinner,Dinner主题），Mirages::parseBiaoqing（Mirages主题），<br>（此项非必填项具体函数名请咨询主题作者，填写后邮件提醒将支持显示表情，更换主题后请同步更换此项内容或者删除此项内容）'));
+        $biaoqing = new Form\Element\Text('biaoqing', NULL, NULL, _t('表情重载'), _t('请填写您博客主题评论表情函数名，如：parseBiaoQing（我的Plain,Sinner,Dinner,Store主题），Mirages::parseBiaoqing（Mirages主题），（此项非必填项具体函数名请咨询主题作者，填写后邮件提醒将支持显示表情，更换主题后请同步更换此项内容或者删除此项内容）'));
         $form->addInput($biaoqing);
         
         // 模板
         $template = new Form\Element\Text('template', NULL, 'default', _t('邮件模板选择'), _t('该项请不要在插件设置里填写，请到邮件模板列表页面选择模板启动！'));
         $template->setAttribute('class', 'hidden');
-        $form->addInput($template);
+        $form->addInput($template);        
+        
+        $t = new Form\Element\Text(
+            'auth',
+            null,
+            \Typecho\Common::randString(32),
+            _t('* 接口保护'),
+            _t('加盐保护 API 接口不被滥用，自动生成禁止自行设置。')
+        );
+        $t->setAttribute('class', 'hidden');
+        $form->addInput($t);
     }
 
     /**
@@ -356,73 +365,107 @@ if($("#tuisongtype :radio:checked").val()=='aliyun')
             } else {
                 $Subject = '你的《' . $comment->title . '》文章有了新的评论';
             }
-        if($plugin->tuisongtype=='aliyun'){
             foreach ($recipients as $recipient) {
             $param['to']=$recipient['mail']; // 收件地址
-            $param['fromName']=$plugin->fromName; // 发件人名称
+            $param['fromName']=$plugin->fromName; // 收件人名称
             $param['subject']=$Subject; // 邮件标题
             $param['html']=self::mailBody($comment, $options, $type); // 邮件内容
-            self::aliyun($param);
-            }
-        }else{
-        try {
-            $from = $plugin->from; // 发件邮箱
-            $fromName = $plugin->fromName; // 发件人
-            // Server settings
-            $mail = new PHPMailer(false);
-            $mail->CharSet = PHPMailer::CHARSET_UTF8;
-            $mail->Encoding = PHPMailer::ENCODING_BASE64;
-            $mail->isSMTP();
-            $mail->Host = $plugin->STMPHost; // SMTP 服务地址
-            $mail->SMTPAuth = true; // 开启认证
-            $mail->Username = $plugin->SMTPUserName; // SMTP 用户名
-            $mail->Password = $plugin->SMTPPassword; // SMTP 密码
-            $mail->SMTPSecure = $plugin->SMTPSecure; // SMTP 加密类型 'ssl' or 'tls'.
-            $mail->Port = $plugin->SMTPPort; // SMTP 端口
-
-            $mail->setFrom($from, $fromName);
-            foreach ($recipients as $recipient) {
-                $mail->addAddress($recipient['mail'], $recipient['name']); // 收件人
-            }
-            $mail->Subject =$Subject;
-
-            $mail->isHTML(); // 邮件为HTML格式
-            // 邮件内容
-            $content = self::mailBody($comment, $options, $type);
-            $mail->Body = $content;
-            $mail->send();
-
-            // 记录日志
-            if ($plugin->log) {
-                $at = date('Y-m-d H:i:s');
-                if ($mail->isError()) {
-                    $data = $at . ' ' . $mail->ErrorInfo; // 记录发信失败的日志
-                } else { // 记录发信成功的日志
-                    $recipientNames = $recipientMails = '';
-                    foreach ($recipients as $recipient) {
-                        $recipientNames .= $recipient['name'] . ', ';
-                        $recipientMails .= $recipient['mail'] . ', ';
-                    }
-                    $data = PHP_EOL . $at . ' 发送成功! ';
-                    $data .= ' 发件人:' . $fromName;
-                    $data .= ' 发件邮箱:' . $from;
-                    $data .= ' 接收人:' . $recipientNames;
-                    $data .= ' 接收邮箱:' . $recipientMails . PHP_EOL;
-                }
-                $fileName = dirname(__FILE__) . '/log.txt';
-                file_put_contents($fileName, $data, FILE_APPEND);
-            }
-
-        } catch (Exception $e) {
-            $fileName = dirname(__FILE__) . '/log.txt';
-            $str = "\nerror time: " . date('Y-m-d H:i:s') . "\n";
-            file_put_contents($fileName, $str, FILE_APPEND);
-            file_put_contents($fileName, $e, FILE_APPEND);
-        }
+            self::resendMail($param);
         }
     }
 
-  
+public static function resendMail($param)
+    {
+        if(Options::alloc()->plugin('CommentNotifier')->yibu==1){
+        Helper::requestService('send', $param);
+        }else{
+        self::send($param);
+        }
+    }
+public static function send($param){
+     // 获取系统配置选项
+    $options = Options::alloc();
+    $plugin = $options->plugin('CommentNotifier');
+    if($plugin->tuisongtype=='aliyun'){
+        self::aliyun($param);
+    }else{
+        self::zemail($param);
+    }
+    
+}
+   
+    
+public static function zemail($param)
+    {   // 获取系统配置选项
+        $options = Options::alloc();
+        // 获取插件配置
+        $plugin = $options->plugin('CommentNotifier');
+        
+        //api地址
+        $rewrite='';if(Helper::options()->rewrite==0){$rewrite='index.php/';}
+        $apiurl=Helper::options()->siteUrl.$rewrite.'zemail';
+        
+        $param['auth']=$plugin->auth;//密钥
+        // 初始化Curl
+        $ch = curl_init();
+        // 设置为POST请求
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'POST');
+        // 请求地址
+        curl_setopt($ch, CURLOPT_URL, $apiurl);
+        // 开启非阻塞模式
+        curl_setopt($ch, CURLOPT_NOSIGNAL, true);
+        // 返回数据
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+        // 提交参数
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $param);
+        // 关闭ssl验证
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
+        // 执行请求
+        $result = curl_exec($ch);
+        // 获取错误代码
+        $errno = curl_errno($ch);
+        // 获取错误信息
+        $error = curl_error($ch);
+        // 获取返回状态码
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        // 关闭请求
+        curl_close($ch);
+        // 成功标识
+        $flag = TRUE;
+        // 如果开启了Debug
+        if ($plugin->log) {
+            // 记录时间
+            $log = '[Zemail] ' . date('Y-m-d H:i:s') . ': ' . PHP_EOL;
+            // 如果失败
+            if ( $errno ) {
+                // 设置失败
+                $flag = FALSE;
+                $log .= _t('邮件发送失败, 错误代码：' . $errno . '，错误提示: ' . $error . PHP_EOL);
+            }
+            // 如果失败
+            if ( 400 <= $httpCode ) {
+                // 设置失败
+                $flag = FALSE;
+                // 尝试转换json
+                if ( $json = json_decode($result) ) {
+                    $log .= _t('邮件发送失败，错误代码：' . $json->Code . '，错误提示：' . $json->Message . PHP_EOL);
+                } else {
+                    $log .= _t('邮件发送失败, 请求返回HTTP Code：' . $httpCode . PHP_EOL);
+                }
+            }
+            // 记录返回值
+            $log .= _t('邮件发送返回数据：' . serialize($result) . PHP_EOL);
+            // 输出分隔
+            $log .= '-------------------------------------------' . PHP_EOL;
+            // 写入文件
+            file_put_contents(dirname(__FILE__) . '/log.txt', "\n".$log."\n", FILE_APPEND);
+        }
+        // 返回结果
+        return $flag;
+    }
+
+
     /**
      * 阿里云邮件发送
      *
@@ -493,6 +536,8 @@ if($("#tuisongtype :radio:checked").val()=='aliyun')
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'POST');
         // 请求地址
         curl_setopt($ch, CURLOPT_URL, $param['api']);
+        // 开启非阻塞模式
+        curl_setopt($ch, CURLOPT_NOSIGNAL, true);
         // 返回数据
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
         // 提交参数
@@ -662,15 +707,6 @@ if($("#tuisongtype :radio:checked").val()=='aliyun')
         }
 
         return file_get_contents($filePath);
-    }
-
-    public static function resendMail($comment)
-    {
-        if(Options::alloc()->plugin('CommentNotifier')->yibu==1){
-        Helper::requestService('refinishComment', $comment);
-        }else{
-        self::refinishComment($comment);
-        }
     }
 
     /**
