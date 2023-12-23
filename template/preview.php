@@ -63,14 +63,14 @@ $search = array(
             $demouser[$index1]['md5'],
             '192.168.1.1',
             'https://github.com/jrotty/CommentNotifier',
-            'https://blog.zezeshe.com',
+            'https://typecho.work',
             '泽泽社',
             $demouser[$index2]['name'],
             '这个插件真好用!',
             'zezeshe@foxmail.com',
             $demouser[$index2]['md5'],
             './' . $templateDir.'/',
-            'https://blog.zezeshe.com',
+            'https://typecho.work',
             '通过'
         );
 
