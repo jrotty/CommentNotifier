@@ -15,6 +15,7 @@
 
         use Typecho\Plugin;
         use Typecho\Db;
+        use Widget\Plugins\Edit;
         use Widget\{Options, Notice};
 
         $template = Options::alloc()->plugin('CommentNotifier')->template;
@@ -22,20 +23,11 @@
         /* @var $response */
         /* @var $options */
         if ($request->change) {
-            $db = Db::get();
-            $select = $db->select('value')->from('table.options')->where('name = ?', 'plugin:CommentNotifier')->limit(1);
-            $aftersitting = $db->fetchRow($select);
-            $setting = unserialize($aftersitting['value']);
-            $setting['template'] = $request->change;
-            $setting = serialize($setting);
-            $update = $db->update('table.options')->rows(array('value' => $setting))->where('name = ?', 'plugin:CommentNotifier');
-            $updateRows = $db->query($update);
+            Edit::configPlugin('CommentNotifier',array('template'=>$request->change));
             Notice::alloc()->set(_t("邮件模板启动成功"), 'success');
             $template = $request->change;
             $response->redirect($options->adminUrl . 'extending.php?panel=' . CommentNotifier_Plugin::$panel);
         }
-
-
         function getMailTheme(): array
         {
             return glob(__TYPECHO_ROOT_DIR__ . __TYPECHO_PLUGIN_DIR__ . '/CommentNotifier/template/*', GLOB_ONLYDIR);
