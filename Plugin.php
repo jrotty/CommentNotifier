@@ -19,7 +19,7 @@ use Widget\Comments\Edit;
  * 
  * @package CommentNotifier
  * @author 泽泽社长
- * @version 1.6.1
+ * @version 1.6.2
  * @link https://github.com/jrotty/CommentNotifier
  */
 
@@ -184,6 +184,10 @@ if($("#tuisongtype :radio:checked").val()=='aliyun')
         // 收件邮箱
         $adminfrom = new Form\Element\Text('adminfrom', NULL, NULL, _t('站长收件邮箱'), _t('遇到待审核评论或文章作者邮箱为空时，评论提醒会发送到此邮箱地址！'));
         $form->addInput($adminfrom->addRule('required', _t('收件邮箱必填!')));
+        
+        
+        $zznotice = new Form\Element\Radio('zznotice', array('0' => _t('通知'), '1' => _t('不通知'),), '0', _t('是否通知站长'), _t('因为站长可能有其他接受评论通知的方式，不想在重复接受邮件通知可选择不通知'));
+        $form->addInput($zznotice);
         
         // 表情重载函数
         $biaoqing = new Form\Element\Text('biaoqing', NULL, NULL, _t('表情重载'), _t('请填写您博客主题评论表情函数名，如：parseBiaoQing（我的Plain,Sinner,Dinner,Store主题），Mirages::parseBiaoqing（Mirages主题），（此项非必填项具体函数名请咨询主题作者，填写后邮件提醒将支持显示表情，更换主题后请同步更换此项内容或者删除此项内容）'));
@@ -376,7 +380,12 @@ if($("#tuisongtype :radio:checked").val()=='aliyun')
 
 public static function resendMail($param)
     {
-        if(Options::alloc()->plugin('CommentNotifier')->yibu==1){
+        // 获取系统配置选项
+        $options = Options::alloc();
+        $plugin = $options->plugin('CommentNotifier');
+        if($plugin->zznotice==1&&$param['to']==$plugin->adminfrom){return;}//不通知站长邮箱
+        
+        if($plugin->yibu==1){
         Helper::requestService('send', $param);
         }else{
         self::send($param);
@@ -386,6 +395,8 @@ public static function send($param){
      // 获取系统配置选项
     $options = Options::alloc();
     $plugin = $options->plugin('CommentNotifier');
+    
+    
     if($plugin->tuisongtype=='aliyun'){
         self::aliyun($param);
     }else{
