@@ -1,0 +1,50 @@
+<?php
+/**
+ * 仿猎聘的邮箱模板
+ * 
+ * @package 木灵鱼儿美化版
+ * @author 木灵鱼儿
+ * @version 1.0.1
+ * @link https://www.mulingyuer.com/
+ */
+ ?>
+<div
+  class="comment-email"
+  style="background-color: #f8f8f8; padding: 100px 0; font-family: 'lucida Grande', Verdana, 'Microsoft YaHei'; font-size: 14px; line-height: 1.7; word-wrap: break-word; overflow: auto"
+>
+  <div class="comment-email-content" style="width: 626px; margin: 0 auto">
+    <div class="comment-email-head" style="padding: 0 23px">
+      <div class="comment-email-head-content" style="background-color: #fff; padding: 20px 36px">
+        <h2 class="comment-email-title" style="margin: 20px 0; padding: 0; font-size: 20px; font-weight: normal; text-align: center; color: #504f4f">评论邮件提醒</h2>
+        <div class="comment-email-message" style="font-size: 14px; color: #504f4f">
+          <div class="comment-email-message-hello" style="margin-bottom: 10px">博主您好：</div>
+          <div class="comment-email-message-content" style="margin-bottom: 10px; line-height: 1.8">
+            您的<a href="{permalink}" target="_blank" rel="noopener" style="text-decoration: none !important; color: #007bbe">《{title}》</a>中有新的评论，内容为：
+            <p style="margin: 10px 0; padding: 10px; color: #4da1bd">{commentText}</p>
+          </div>
+        </div>
+        <div class="comment-email-other" style="margin-top: 20px; padding: 10px 0; border-top: 1px dashed #c2c2c2">
+          <div class="comment-email-other-item" style="font-size: 14px; color: #666; margin-bottom: 10px">时间：<span style="color: #199475">{time}</span></div>
+          <div class="comment-email-other-item" style="font-size: 14px; color: #666; margin-bottom: 10px">IP：<span style="color: #199475">{ip}</span></div>
+          <div class="comment-email-other-item" style="font-size: 14px; color: #666; margin-bottom: 10px">邮箱：<span style="color: #199475">{mail}</span></div>
+          <div class="comment-email-other-item" style="font-size: 14px; color: #666">状态：<span style="color: #199475">{status}</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="comment-email-body" style="margin-top: -30px; height: 328px; background-repeat: no-repeat; background-image: url('https://i.loli.net/2019/06/11/5cff48e931aeb68729.png')">
+      <div class="comment-email-btn-wrapper" style="padding-top: 40px; text-align: center">
+        <a
+          class="comment-email-btn"
+          href="{permalink}"
+          target="_blank"
+          rel="noopener"
+          style="display: inline-block; vertical-align: top; padding: 5px 20px; color: #fff; text-decoration: none !important; background-color: #f90; border-radius: 4px"
+          >管　理</a
+        >
+      </div>
+    </div>
+    <div class="comment-email-footer" style="margin: 10px 0">
+      <p class="comment-email-info" style="font-size: 12px; color: #bcbcbc; text-align: center">— 注：此为系统邮件，请勿直接回复 —</p>
+    </div>
+  </div>
+</div>
