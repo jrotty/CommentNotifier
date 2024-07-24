@@ -1,5 +1,14 @@
-<style type="text/css">
-#comment2u {
+<?php
+/**
+ * 仿微信PC邮件通知模板，html源码转自 https://digu.plus/post/a8d6cf7ba81a4de5b7186d2dac62a6c0
+ * 
+ * @package Wechat
+ * @author 泽泽
+ * @version 1.0.0
+ * @link https://typecho.work/
+ */
+ ?>
+<div id="comment2u" style="  
   font-size: 14px;
   margin: 0 auto;
   width: 720px;
@@ -7,77 +16,67 @@
   background-color: #eee;
   border-radius: 3px;
   -moz-border-radius: 3px;
-  -webkit-border-radius: 3px;
-}
-#comment2u .wrap {
+  -webkit-border-radius: 3px;">
+  <div class="wrap"
+  style="
   padding: 10px 20px;
-}
-#comment2u .header {
-  line-height: 30px;
+  "
+  >
+    <div class="header"
+    style="
+      line-height: 30px;
   position: relative;
   padding-bottom: 10px;
   border-bottom: 1px solid #d6d6d6;
   background-color: #eee;
   text-align: center;
   margin-bottom: 12px;
-}
-#comment2u .body {
-  min-height: 600px;
-}
-
-#comment2u .notice {
-  max-width: 100%;
+    "
+    >{siteTitle}交流群</div>
+    <div class="body"
+    style="
+    min-height: 600px;
+    "
+    >
+      <div class="item notice" style="  max-width: 100%;
   text-align: center;
   font-size: 12px;
   margin: 0 auto;
   padding: 1px 10px;
   color: #b2b2b2;
   line-height: 24px;
-}
-#comment2u .notice a {
-  color: #526685;
-  text-decoration: none;
-}
-#comment2u .item {
-  display: flex;
-  margin-bottom: 12px;
-}
-#comment2u .notice {
   justify-content: center;
-  display: block;
-}
-#comment2u .parent {
-  justify-content: flex-end;
-}
-#comment2u .child {
-  justify-content: flex-start;
-}
-#comment2u .parent .content {
-  background-color: #b2e281;
-}
-#comment2u .child .content {
-  background-color: #ffffff;
-}
-#comment2u .item .avatar img {
-  width: 40px;
-  height: 40px;
-  border-radius: 2px;
-  -moz-border-radius: 2px;
-  -webkit-border-radius: 2px;
-  cursor: pointer;
-}
-#comment2u .child .nick {
-  padding-left: 10px;
+  display: block;display: flex;margin-bottom: 12px;">
+        "{PostAuthor}"发布了《<a href="{permalink}" style="color: #526685;text-decoration: none;">{title}</a>》，访客可通过评论加入
+      </div>
+      <div class="item notice" style="  max-width: 100%;
+  text-align: center;
   font-size: 12px;
-  height: 24px;
-  color: #4f4f4f;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  word-wrap: normal;
-}
-#comment2u .parent .nick {
-  text-align: right;
+  margin: 0 auto;
+  padding: 1px 10px;
+  color: #b2b2b2;
+  line-height: 24px;
+  justify-content: center;
+  display: block;display: flex;margin-bottom: 12px;">"{author}"通过评论加入了群聊</div>
+      <div class="item notice" style="  max-width: 100%;
+  text-align: center;
+  font-size: 12px;
+  margin: 0 auto;
+  padding: 1px 10px;
+  color: #b2b2b2;
+  line-height: 24px;
+  justify-content: center;
+  display: block;display: flex;margin-bottom: 12px;">{time}</div>
+      <div class="item parent" style="  max-width: 100%;
+  text-align: center;
+  font-size: 12px;
+  margin: 0 auto;
+  padding: 1px 10px;
+  line-height: 24px;
+  justify-content: center;
+  display: block;display: flex;margin-bottom: 12px;justify-content: flex-end;">
+        <div class="scope">
+          <div class="nick" style="  text-align: right;
   padding-right: 10px;
   font-size: 12px;
   height: 24px;
@@ -85,10 +84,10 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  word-wrap: normal;
-}
-#comment2u .item .content {
-  word-wrap: break-word;
+  word-wrap: normal;">{author}</div>
+          <div class="content"
+          style="
+            word-wrap: break-word;
   word-break: break-all;
   min-height: 25px;
   max-width: 500px;
@@ -101,9 +100,12 @@
   text-align: left;
   position: relative;
   padding: 10px 15px;
-}
-#comment2u .parent .arrow {
-  width: 0;
+  background-color: #b2e281;
+          "
+          >
+            <span class="arrow"
+            style="
+              width: 0;
   height: 0;
   border-top: 6px solid transparent;
   border-bottom: 6px solid transparent;
@@ -115,48 +117,30 @@
   left: auto;
   top: 12px;
   position: absolute;
-}
-#comment2u .child .arrow {
-  width: 0;
-  height: 0;
-  border-top: 6px solid transparent;
-  border-bottom: 6px solid transparent;
-  border-right: 6px solid;
-  border-right-color: #ffffff;
-  border-left: 0;
-  border-left-color: transparent;
-  right: auto;
-  left: -6px;
-  top: 12px;
-  position: absolute;
-}
-#comment2u .item .content p {
-  margin: 0;
-  line-height: 1.6;
-}    
-</style>
-<div id="comment2u">
-  <div class="wrap">
-    <div class="header">{siteTitle}交流群</div>
-    <div class="body">
-      <div class="item notice">
-        "{PostAuthor}"发布了《<a href="{permalink}">{title}</a>》，访客可通过评论加入
-      </div>
-      <div class="item notice">"{author}"通过评论加入了群聊</div>
-      <div class="item notice">{time}</div>
-      <div class="item parent">
-        <div class="scope">
-          <div class="nick">{author}</div>
-          <div class="content">
-            <span class="arrow"></span>
+            "
+            ></span>
             <div>{commentText}</div>
           </div>
         </div>
         <div class="avatar">
-          <img src="https://cravatar.cn/avatar/{md5}?d=monsterid&s=40" alt="" />
+          <img src="https://cravatar.cn/avatar/{md5}?d=monsterid&s=40" alt="" style="  width: 40px;
+  height: 40px;
+  border-radius: 2px;
+  -moz-border-radius: 2px;
+  -webkit-border-radius: 2px;
+  cursor: pointer;"/>
         </div>
       </div>
-      <div class="item notice">该群友发言有待审核，请点击"<a target="_blank" href="{manageurl}">这里</a>"前往审核
+      <div class="item notice" style="  max-width: 100%;
+  text-align: center;
+  font-size: 12px;
+  margin: 0 auto;
+  padding: 1px 10px;
+  color: #b2b2b2;
+  line-height: 24px;
+  justify-content: center;
+  display: block;display: flex;margin-bottom: 12px;">
+        该群友发言有待审核，请点击"<a target="_blank" href="{manageurl}" style="color: #526685;text-decoration: none;">这里</a>"前往审核
       </div>
     </div>
   </div>
