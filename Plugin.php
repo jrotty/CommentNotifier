@@ -19,7 +19,7 @@ use Widget\Comments\Edit;
  * 
  * @package CommentNotifier
  * @author 泽泽社长
- * @version 1.6.3
+ * @version 1.6.4
  * @link https://github.com/jrotty/CommentNotifier
  */
 
