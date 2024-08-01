@@ -335,10 +335,12 @@ if($("#tuisongtype :radio:checked").val()=='aliyun')
         // 审核通过
         if ($comment->status == 'approved') {
             $type = 0;//0为无父级评论
+            $author=self::getAuthor($comment);//获取文章作者信息
             // 不需要发信给博主
-            if ($comment->authorId != $comment->ownerId && $comment->mail != $from) {
-                $recipients[] = self::getAuthor($comment);//收到新评论后发送给文章作者
+            if ($comment->authorId != $comment->ownerId && $comment->mail != $author['mail']) {
+                $recipients[] = $author;
             }
+            
             // 如果有上级
             if ($comment->parent) {
                 $type = 1;//1为有父级评论
