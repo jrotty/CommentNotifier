@@ -56,8 +56,8 @@ class CommentNotifier_Action extends Typecho_Widget implements Widget_Interface_
                     $data = PHP_EOL . $at . ' 发送成功! ';
                     $data .= ' 发件人:' . $fromName;
                     $data .= ' 发件邮箱:' . $from;
-                    $data .= ' 接收人:' . $_REQUEST['to'];
-                    $data .= ' 接收邮箱:' . $_REQUEST['fromName'] . PHP_EOL;
+                    $data .= ' 接收邮箱:' . $_REQUEST['to'];
+                    $data .= ' 接收人:' . $_REQUEST['fromName'] . PHP_EOL;
                 }
                 echo $data;
 
