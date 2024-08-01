@@ -196,7 +196,7 @@ if($("#tuisongtype :radio:checked").val()=='aliyun')
         $testurl=$apiurl.'?subject=标题&html=测试内容&to='.$plugin->adminfrom.'&fromName='.$plugin->fromName.'&auth='.$plugin->auth;
         
         // 表情重载函数
-        $biaoqing = new Form\Element\Text('biaoqing', NULL, NULL, _t('表情重载'), _t('请填写您博客主题评论表情函数名，如：parseBiaoQing（我的Plain,Sinner,Dinner,Store主题），Mirages::parseBiaoqing（Mirages主题），（此项非必填项具体函数名请咨询主题作者，填写后邮件提醒将支持显示表情，更换主题后请同步更换此项内容或者删除此项内容）<br><br>设置好插件所有设置参数并保存设置后，可以点击下方链接进行测试邮件是否发信正常<br><a href="'.$testurl.'" target="_blank" rel="noopener noreferrer">点击测试邮件发信是否正常</a><br>'));
+        $biaoqing = new Form\Element\Text('biaoqing', NULL, NULL, _t('表情重载'), _t('请填写您博客主题评论表情函数名，如：parseBiaoQing（我的Plain,Sinner,Dinner,Store主题），Mirages::parseBiaoqing（Mirages主题），（此项非必填项具体函数名请咨询主题作者，填写后邮件提醒将支持显示表情，更换主题后请同步更换此项内容或者删除此项内容）<p class="smtp">设置好插件所有设置参数并保存设置后，可以点击下方链接进行测试邮件是否发信正常<br><a href="'.$testurl.'" target="_blank" rel="noopener noreferrer">点击测试邮件发信是否正常【仅适用于SMTP模式】</a></p>'));
         $form->addInput($biaoqing);
         
         // 模板
