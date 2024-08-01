@@ -19,7 +19,7 @@ use Widget\Comments\Edit;
  * 
  * @package CommentNotifier
  * @author 泽泽社长
- * @version 1.6.5
+ * @version 1.6.6
  * @link https://github.com/jrotty/CommentNotifier
  */
 
@@ -189,8 +189,14 @@ if($("#tuisongtype :radio:checked").val()=='aliyun')
         $zznotice = new Form\Element\Radio('zznotice', array('0' => _t('通知'), '1' => _t('不通知'),), '0', _t('是否通知站长'), _t('因为站长可能有其他接受评论通知的方式，不想在重复接受邮件通知可选择不通知'));
         $form->addInput($zznotice);
         
+        
+        $rewrite='';if(Helper::options()->rewrite==0){$rewrite='index.php/';}
+        $apiurl=Helper::options()->siteUrl.$rewrite.'zemail';
+        $plugin = Options::alloc()->plugin('CommentNotifier');
+        $testurl=$apiurl.'?subject=标题&html=测试内容&to='.$plugin->adminfrom.'&fromName='.$plugin->fromName.'&auth='.$plugin->auth;
+        
         // 表情重载函数
-        $biaoqing = new Form\Element\Text('biaoqing', NULL, NULL, _t('表情重载'), _t('请填写您博客主题评论表情函数名，如：parseBiaoQing（我的Plain,Sinner,Dinner,Store主题），Mirages::parseBiaoqing（Mirages主题），（此项非必填项具体函数名请咨询主题作者，填写后邮件提醒将支持显示表情，更换主题后请同步更换此项内容或者删除此项内容）'));
+        $biaoqing = new Form\Element\Text('biaoqing', NULL, NULL, _t('表情重载'), _t('请填写您博客主题评论表情函数名，如：parseBiaoQing（我的Plain,Sinner,Dinner,Store主题），Mirages::parseBiaoqing（Mirages主题），（此项非必填项具体函数名请咨询主题作者，填写后邮件提醒将支持显示表情，更换主题后请同步更换此项内容或者删除此项内容）<br><br>设置好插件所有设置参数并保存设置后，可以点击下方链接进行测试邮件是否发信正常<br><a href="'.$testurl.'" target="_blank" rel="noopener noreferrer">点击测试邮件发信是否正常</a><br>'));
         $form->addInput($biaoqing);
         
         // 模板

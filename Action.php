@@ -48,8 +48,7 @@ class CommentNotifier_Action extends Typecho_Widget implements Widget_Interface_
             $mail->Body = $content;
             $mail->send();
 
-            // 记录日志
-            if ($plugin->log) {
+
                 $at = date('Y-m-d H:i:s');
                 if ($mail->isError()) {
                     $data = $at . ' ' . $mail->ErrorInfo; // 记录发信失败的日志
@@ -61,7 +60,6 @@ class CommentNotifier_Action extends Typecho_Widget implements Widget_Interface_
                     $data .= ' 接收邮箱:' . $_REQUEST['fromName'] . PHP_EOL;
                 }
                 echo $data;
-            }
 
         } catch (Exception $e) {
             $str = "\nerror time: " . date('Y-m-d H:i:s') . "\n";
