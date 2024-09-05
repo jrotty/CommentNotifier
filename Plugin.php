@@ -13,13 +13,19 @@ use Utils\Helper;
 use Widget\Feedback;
 use Widget\Service;
 use Widget\Comments\Edit;
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
+
+require dirname(__FILE__) . '/PHPMailer/PHPMailer.php';
+require dirname(__FILE__) . '/PHPMailer/SMTP.php';
+require dirname(__FILE__) . '/PHPMailer/Exception.php';
 
 /**
  * typecho 评论通过时发送邮件提醒,要求typecho1.2.0及以上
  * 
  * @package CommentNotifier
  * @author 泽泽社长
- * @version 1.6.6
+ * @version 1.6.8
  * @link https://github.com/jrotty/CommentNotifier
  */
 
@@ -197,9 +203,16 @@ if($("#tuisongtype :radio:checked").val()=='aliyun')
         $plugin = Helper::options()->plugin('CommentNotifier');
         $testurl=$apiurl.'?subject=标题&html=测试内容&to='.$plugin->adminfrom.'&fromName='.$plugin->fromName.'&auth='.$plugin->auth;
         }
+        
+        // smtp发信方案
+        $smtptype = new Form\Element\Radio('smtptype', array('curl' => _t('默认Curl方案'), 'go' => _t('传统直发方案')), 'curl', _t('发信方案'), _t('传统方案兼容性好，适合用虚拟主机的用户'));
+        $form->addInput($smtptype);
+        $smtptype->setAttribute('class', 'typecho-option smtp');
+        
         // 表情重载函数
         $biaoqing = new Form\Element\Text('biaoqing', NULL, NULL, _t('表情重载'), _t('请填写您博客主题评论表情函数名，如：parseBiaoQing（我的Plain,Sinner,Dinner,Store主题），Mirages::parseBiaoqing（Mirages主题），（此项非必填项具体函数名请咨询主题作者，填写后邮件提醒将支持显示表情，更换主题后请同步更换此项内容或者删除此项内容）<p class="smtp">设置好插件所有设置参数并保存设置后，可以点击下方链接进行测试邮件是否发信正常<br><a href="'.$testurl.'" target="_blank" rel="noopener noreferrer">点击测试邮件发信是否正常【仅适用于SMTP模式】</a></p>'));
         $form->addInput($biaoqing);
+        
         
         // 模板
         $template = new Form\Element\Text('template', NULL, 'default', _t('邮件模板选择'), _t('该项请不要在插件设置里填写，请到邮件模板列表页面选择模板启动！'));
@@ -427,6 +440,59 @@ public static function zemail($param)
         $apiurl=Helper::options()->siteUrl.$rewrite.'zemail';
         
         $param['auth']=$plugin->auth;//密钥
+        
+if($plugin->smtptype=="go"){
+try {
+            $from = $plugin->from; // 发件邮箱
+            $fromName = $plugin->fromName; // 发件人
+            // Server settings
+            $mail = new PHPMailer(false);
+            $mail->CharSet = PHPMailer::CHARSET_UTF8;
+            $mail->Encoding = PHPMailer::ENCODING_BASE64;
+            $mail->isSMTP();
+            $mail->Host = $plugin->STMPHost; // SMTP 服务地址
+            $mail->SMTPAuth = true; // 开启认证
+            $mail->Username = $plugin->SMTPUserName; // SMTP 用户名
+            $mail->Password = $plugin->SMTPPassword; // SMTP 密码
+            $mail->SMTPSecure = $plugin->SMTPSecure; // SMTP 加密类型 'ssl' or 'tls'.
+            $mail->Port = $plugin->SMTPPort; // SMTP 端口
+
+            $mail->setFrom($from, $fromName);
+            $mail->addAddress($param['to'], $paramT['fromName']); // 收件人
+            $mail->Subject =$param['subject'];
+
+            $mail->isHTML(); // 邮件为HTML格式
+            // 邮件内容
+            $mail->Body = $param['html'];
+            $mail->send();
+
+            // 记录日志
+            if ($plugin->log) {
+                $at = date('Y-m-d H:i:s');
+                if ($mail->isError()) {
+                    $data = $at . ' ' . $mail->ErrorInfo; // 记录发信失败的日志
+                } else { // 记录发信成功的日志
+                    $data = PHP_EOL . $at . ' 发送成功! ';
+                    $data .= ' 发件人:' . $fromName;
+                    $data .= ' 发件邮箱:' . $from;
+                    $data .= ' 接收人:' . $paramT['fromName'];
+                    $data .= ' 接收邮箱:' . $param['to'] . PHP_EOL;
+                }
+                $fileName = dirname(__FILE__) . '/log.txt';
+                file_put_contents($fileName, $data, FILE_APPEND);
+            }
+
+        } catch (Exception $e) {
+            if ($plugin->log) {
+            $fileName = dirname(__FILE__) . '/log.txt';
+            $str = "\nerror time: " . date('Y-m-d H:i:s') . "\n";
+            file_put_contents($fileName, $str, FILE_APPEND);
+            file_put_contents($fileName, $e, FILE_APPEND);
+            }
+        }
+}else{
+
+        
         // 初始化Curl
         $ch = curl_init();
         // 设置为POST请求
@@ -482,6 +548,8 @@ public static function zemail($param)
             // 写入文件
             file_put_contents(dirname(__FILE__) . '/log.txt', "\n".$log."\n", FILE_APPEND);
         }
+        
+}
         // 返回结果
         return $flag;
     }

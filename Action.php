@@ -53,7 +53,7 @@ class CommentNotifier_Action extends Typecho_Widget implements Widget_Interface_
                 if ($mail->isError()) {
                     $data = $at . ' ' . $mail->ErrorInfo; // 记录发信失败的日志
                 } else { // 记录发信成功的日志
-                    $data = PHP_EOL . $at . ' 发送成功! ';
+                    $data = PHP_EOL . $at . ' 发送成功!! ';
                     $data .= ' 发件人:' . $fromName;
                     $data .= ' 发件邮箱:' . $from;
                     $data .= ' 接收邮箱:' . $_REQUEST['to'];
