@@ -25,7 +25,7 @@ require dirname(__FILE__) . '/PHPMailer/Exception.php';
  * 
  * @package CommentNotifier
  * @author 泽泽社长
- * @version 1.6.9
+ * @version 1.7.0
  * @link https://github.com/jrotty/CommentNotifier
  */
 
@@ -394,7 +394,7 @@ if($("#tuisongtype :radio:checked").val()=='aliyun')
             }
             foreach ($recipients as $recipient) {
             $param['to']=$recipient['mail']; // 收件地址
-            $param['fromName']=$plugin->fromName; // 收件人名称
+            $param['fromName']=$recipient['name']; // 收件人名称
             $param['subject']=$Subject; // 邮件标题
             $param['html']=self::mailBody($comment, $options, $type); // 邮件内容
             self::resendMail($param);
