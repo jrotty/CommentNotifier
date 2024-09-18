@@ -189,7 +189,7 @@ class CommentNotifier_Console extends Typecho_Widget
                 <div class="typecho-edit-theme">
                     <div class="col-mb-12 col-tb-8 col-9 content">
                         <form method="post" name="theme" id="theme"
-                              action="<?php $options->adminUrl('extending.php?panel=' . CommentNotifier_Plugin::$panel . '&act=theme' . '&file=' . $files->file); ?>">
+                              action="<?php $options->adminUrl('extending.php?panel=' . CommentNotifier_Plugin::$panel . '&act=theme&theme=' .$othertheme. '&file=' . $files->file); ?>">
                             <label for="content" class="sr-only"><?php _e('编辑源码'); ?></label>
                             <textarea name="content" id="content" class="w-100 mono"
                                       <?php if (!$files->currentIsWriteable()): ?>readonly<?php endif; ?>><?php echo $files->currentContent(); ?></textarea>
