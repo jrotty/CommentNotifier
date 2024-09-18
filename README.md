@@ -46,7 +46,7 @@ Typecho博客评论邮件提醒，支持异步回调（异步回调优点就是�
 
 
 ###支持
-![ '要饭' ] ( https://github.com/jrotty/CommentNotifier/blob/main/yaofan.jpg )
+!['要饭'](https://github.com/jrotty/CommentNotifier/blob/main/yaofan.jpg)
 
 
 #### 感谢
