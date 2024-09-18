@@ -25,7 +25,7 @@ require dirname(__FILE__) . '/PHPMailer/Exception.php';
  * 
  * @package CommentNotifier
  * @author 泽泽社长
- * @version 1.6.8
+ * @version 1.6.9
  * @link https://github.com/jrotty/CommentNotifier
  */
 
@@ -419,7 +419,8 @@ public static function send($param){
     $options = Options::alloc();
     $plugin = $options->plugin('CommentNotifier');
     
-    
+    // 消除下方注释后这里会睡眠10秒，可测试异步提交是否真正提速了
+    //sleep(10);
     if($plugin->tuisongtype=='aliyun'){
         self::aliyun($param);
     }else{
