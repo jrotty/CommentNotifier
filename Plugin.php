@@ -25,7 +25,7 @@ require dirname(__FILE__) . '/PHPMailer/Exception.php';
  * 
  * @package CommentNotifier
  * @author 泽泽社长
- * @version 1.7.1
+ * @version 1.8.0
  * @link https://github.com/jrotty/CommentNotifier
  */
 
@@ -77,27 +77,16 @@ class Plugin implements PluginInterface
     {
         ?>
         <style>
-            .aliyun,.smtp{display:none;}
+            .aliyun,.smtp,.api{display:none;}
         </style>
         <script>
 window.onload = function () {
-if($("#tuisongtype :radio:checked").val()=='aliyun')
-{
-        $('.aliyun').show(); 
-        $('.smtp').hide(); 
-        }else{
-        $('.aliyun').hide(); 
-        $('.smtp').show();  
-}
+$('.'+$("#tuisongtype :radio:checked").val()).show();
 $('#tuisongtype input').click(function(){
-if($("#tuisongtype :radio:checked").val()=='aliyun')
-{
-        $('.aliyun').show(); 
-        $('.smtp').hide(); 
-        }else{
-        $('.aliyun').hide(); 
-        $('.smtp').show();  
-}
+$('.smtp').hide();
+$('.aliyun').hide();
+$('.api').hide();
+$('.'+$("#tuisongtype :radio:checked").val()).show();
      });
 }
         </script>
@@ -110,7 +99,7 @@ if($("#tuisongtype :radio:checked").val()=='aliyun')
         $form->addInput($yibu);
 
         // 发信方式
-        $tuisongtype = new Form\Element\Radio('tuisongtype', array('smtp' => _t('SMTP'), 'aliyun' => _t('阿里云推送')), 'smtp', _t('邮件推送方式'));
+        $tuisongtype = new Form\Element\Radio('tuisongtype', array('smtp' => _t('SMTP'), 'aliyun' => _t('阿里云推送'), 'api' => _t('通过api')), 'smtp', _t('邮件推送方式'));
         $form->addInput($tuisongtype);
         $tuisongtype->setAttribute('id', 'tuisongtype');
 
@@ -177,6 +166,18 @@ if($("#tuisongtype :radio:checked").val()=='aliyun')
         $ali_from->setAttribute('class', 'typecho-option aliyun');
         $ali_accesskey_id->setAttribute('class', 'typecho-option aliyun');
         $ali_accesskey_secret->setAttribute('class', 'typecho-option aliyun');
+        
+        
+        // api推送区块
+        $api_section = new Layout();
+        // 区块标题
+        $api_section->html('<h2>API发送设置</h2>');
+        $form->addItem($ali_section);
+        // 发件api
+        $api_url = new Form\Element\Text('api_url', NULL, NULL, _t('api地址'), _t('请填写用于发送的api链接，需要服务器支持curl函数，部分虚拟主机可能并不能用curl'));
+        $form->addInput($api_url);
+        
+        $api_url->setAttribute('class', 'typecho-option api');
 
 
         $layout = new Layout();
@@ -436,11 +437,16 @@ public static function zemail($param)
         // 获取插件配置
         $plugin = $options->plugin('CommentNotifier');
         
+        if($plugin->tuisongtype=='api'&&$plugin->api_url){
+        $apiurl=$plugin->api_url;
+        $plugin->smtptype='curl';
+        }else{
         //api地址
         $rewrite='';if(Helper::options()->rewrite==0){$rewrite='index.php/';}
         $apiurl=Helper::options()->siteUrl.$rewrite.'zemail';
         
         $param['auth']=$plugin->auth;//密钥
+        }
         
 if($plugin->smtptype=="go"){
 try {
