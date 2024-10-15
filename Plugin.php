@@ -174,19 +174,19 @@ $('.'+$("#tuisongtype :radio:checked").val()).show();
         $api_section->html('<h2>API发送设置</h2>');
         $form->addItem($ali_section);
         // 发件api
-        $api_url = new Form\Element\Text('api_url', NULL, NULL, _t('api地址'), _t('请填写用于发送的api链接，需要服务器支持curl函数，部分虚拟主机可能并不能用curl'));
+        $api_url = new Form\Element\Text('api_url', NULL, NULL, _t('api地址'), _t('请填写用于发送的api链接，需要服务器支持curl函数，部分虚拟主机可能并不能用curl,自己api将插件目录下的zemailapi文件夹放到用于构建api的服务器，然后配置config.php文件即可'));
         $form->addInput($api_url);
         
         $api_url->setAttribute('class', 'typecho-option api');
 
 
         $layout = new Layout();
-        $layout->html(_t('<h3>邮件信息配置:</h3>'));
+        $layout->html(_t('<h3>其他配置:</h3>'));
         $form->addItem($layout);
 
         // 发件人姓名
-        $fromName = new Form\Element\Text('fromName', NULL, NULL, _t('发件人姓名'), _t('发件人姓名'));
-        $form->addInput($fromName->addRule('required', _t('发件人姓名必填!')));
+        $fromName = new Form\Element\Text('fromName', NULL, NULL, _t('发件人昵称'), _t('发件人昵称'));
+        $form->addInput($fromName->addRule('required', _t('发件人昵称必填!')));
 
         // 收件邮箱
         $adminfrom = new Form\Element\Text('adminfrom', NULL, NULL, _t('站长收件邮箱'), _t('遇到待审核评论或文章作者邮箱为空时，评论提醒会发送到此邮箱地址！'));
@@ -283,7 +283,6 @@ $('.'+$("#tuisongtype :radio:checked").val()).show();
         $db = Db::get();
         $ae = $db->fetchRow($db->select()->from('table.users')->where('table.users.uid=?', $comment->ownerId));
         if (empty($ae['mail'])) {
-            $ae['screenName'] = $plugin->fromName;
             $ae['mail'] = $plugin->adminfrom;
         }
         $recipients = [
