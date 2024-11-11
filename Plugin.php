@@ -25,7 +25,7 @@ require dirname(__FILE__) . '/PHPMailer/Exception.php';
  * 
  * @package CommentNotifier
  * @author 泽泽社长
- * @version 1.8.0
+ * @version 1.8.1
  * @link https://github.com/jrotty/CommentNotifier
  */
 
@@ -204,11 +204,6 @@ $('.'+$("#tuisongtype :radio:checked").val()).show();
         $plugin = Helper::options()->plugin('CommentNotifier');
         $testurl=$apiurl.'?subject=标题&html=测试内容&to='.$plugin->adminfrom.'&fromName='.$plugin->fromName.'&auth='.$plugin->auth;
         }
-        
-        // smtp发信方案
-        $smtptype = new Form\Element\Radio('smtptype', array('curl' => _t('默认Curl方案'), 'go' => _t('传统直发方案')), 'curl', _t('发信方案'), _t('传统方案兼容性好，适合用虚拟主机的用户'));
-        $form->addInput($smtptype);
-        $smtptype->setAttribute('class', 'typecho-option smtp');
         
         // 表情重载函数
         $biaoqing = new Form\Element\Text('biaoqing', NULL, NULL, _t('表情重载'), _t('请填写您博客主题评论表情函数名，如：parseBiaoQing（我的Plain,Sinner,Dinner,Store主题），Mirages::parseBiaoqing（Mirages主题），（此项非必填项具体函数名请咨询主题作者，填写后邮件提醒将支持显示表情，更换主题后请同步更换此项内容或者删除此项内容）<p class="smtp">设置好插件所有设置参数并保存设置后，可以点击下方链接进行测试邮件是否发信正常<br><a href="'.$testurl.'" target="_blank" rel="noopener noreferrer">点击测试邮件发信是否正常【仅适用于SMTP模式】</a></p>'));
@@ -436,18 +431,13 @@ public static function zemail($param)
         // 获取插件配置
         $plugin = $options->plugin('CommentNotifier');
         
+        $smtptype='go';
         if($plugin->tuisongtype=='api'&&$plugin->api_url){
         $apiurl=$plugin->api_url;
-        $plugin->smtptype='curl';
-        }else{
-        //api地址
-        $rewrite='';if(Helper::options()->rewrite==0){$rewrite='index.php/';}
-        $apiurl=Helper::options()->siteUrl.$rewrite.'zemail';
-        
-        $param['auth']=$plugin->auth;//密钥
+        $smtptype='curl';
         }
         
-if($plugin->smtptype=="go"){
+if($smtptype=="go"){
 try {
             $from = $plugin->from; // 发件邮箱
             $fromName = $plugin->fromName; // 发件人
