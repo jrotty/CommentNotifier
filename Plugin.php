@@ -21,7 +21,7 @@ require dirname(__FILE__) . '/PHPMailer/SMTP.php';
 require dirname(__FILE__) . '/PHPMailer/Exception.php';
 
 /**
- * typecho 评论通过时发送邮件提醒,要求typecho1.2.0及以上
+ * typecho评论通过时发送邮件提醒,要求typecho1.2.0及以上<br>其他付费产品：https://store.typecho.work/
  * 
  * @package CommentNotifier
  * @author 泽泽社长
