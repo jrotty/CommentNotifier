@@ -767,7 +767,7 @@ try {
             $Ptext,
             $Pmail,
             $Pmd5,
-            Options::alloc()->pluginUrl . '/CommentNotifier/template/' . $template.'/',
+            Options::alloc()->pluginUrl . '/CommentNotifier/template/' . $template .'/',
             Options::alloc()->adminUrl . '/manage-comments.php',
             $status[$comment->status]
         );
