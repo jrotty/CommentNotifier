@@ -698,12 +698,15 @@ try {
         $Pname = '';
         $Ptext = '';
         $Pmd5 = '';
+        $Ptime = '';
         if ($comment->parent) {
             $parent = Helper::widgetById('comments', $comment->parent);
             $Pname = $parent->author;
             $Ptext = $parent->content;
             $Pmail = $parent->mail;
             $Pmd5 = md5($parent->mail);
+            $Ptime = new Date($parent->created);
+            $Ptime = $Ptime->format('Y-m-d H:i:s');
         }
         
         $post=Helper::widgetById('Contents', $comment->cid);
@@ -746,6 +749,7 @@ try {
             '{Pname}',//父级评论昵称
             '{Ptext}',//父级评论内容
             '{Pmail}',//父级评论邮箱
+            '{Ptime}',//父级评论时间
             '{Pmd5}',//父级评论邮箱md5
             '{url}',//当前模板文件夹路径
             '{manageurl}',//后台管理评论的入口链接
@@ -766,6 +770,7 @@ try {
             $Pname,
             $Ptext,
             $Pmail,
+            $Ptime,
             $Pmd5,
             Options::alloc()->pluginUrl . '/CommentNotifier/template/' . $template .'/',
             Options::alloc()->adminUrl . '/manage-comments.php',
