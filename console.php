@@ -227,6 +227,7 @@ class CommentNotifier_Console extends Typecho_Widget
                             <li><?php _e("父评论昵称：{Pname}"); ?></li>
                             <li><?php _e("父评论内容：{Ptext}"); ?></li>
                             <li><?php _e("父评论邮箱：{Pmail}"); ?></li>
+                            <li><?php _e("父评论时间：{Ptime}"); ?></li>
                             <li><?php _e("父评论邮箱md5：{Pmd5}"); ?></li>
                         <?php endif; ?>
                             
