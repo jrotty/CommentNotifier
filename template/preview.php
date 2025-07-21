@@ -1,8 +1,6 @@
 <?php
-if(!empty($_GET['theme'])&&!empty($_GET['file'])){
-$theme=$_GET['theme'];
-$file=$_GET['file'];
-}
+$theme = empty($_GET['theme']) ? '' : $_GET['theme'];
+$file = empty($_GET['file']) ? '' : $_GET['file'];
     /**
      * 获取评论模板
      *
@@ -48,6 +46,7 @@ $search = array(
             '{Pname}',//父级评论昵称
             '{Ptext}',//父级评论内容
             '{Pmail}',//父级评论邮箱
+            '{Ptime}',//父级评论时间
             '{Pmd5}',//父级评论邮箱md5
             '{url}',//当前模板文件夹路径
             '{manageurl}',//后台管理评论的入口链接
@@ -68,12 +67,12 @@ $search = array(
             $demouser[$index2]['name'],
             '这个插件真好用!',
             'zezeshe@foxmail.com',
+            date('Y-m-d H:i:s'),
             $demouser[$index2]['md5'],
             './' . $templateDir.'/',
             'https://typecho.work',
             '通过'
         );
-
         return str_replace($search, $replace, $content);
     }
 ?>
@@ -86,7 +85,12 @@ $search = array(
 </head>
 <body>
     
-<?php echo getTemplate($theme,$file); ?>
+<?php 
+if(empty($theme)||empty($file)){
+    echo '预览的主题文件夹或主题文件不存在';
+}else{
+    echo getTemplate($theme,$file);
+} ?>
     
 </body>
 </html>
