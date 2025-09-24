@@ -47,7 +47,7 @@ Typecho博客评论邮件提醒，支持异步回调（异步回调优点就是�
 
 ### 支持
 
-![要饭](https://91ntr.cn/yaofan.webp)
+![要饭](https://blog.aihaonv.com/yaofan.webp)
 
 目前累计收到 16 元（3笔）人民币赞助
 
