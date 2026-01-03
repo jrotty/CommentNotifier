@@ -25,7 +25,7 @@ require dirname(__FILE__) . '/PHPMailer/Exception.php';
  * 
  * @package CommentNotifier
  * @author 泽泽社长
- * @version 1.8.3
+ * @version 1.8.4
  * @link https://github.com/jrotty/CommentNotifier
  */
 
