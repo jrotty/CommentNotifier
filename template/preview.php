@@ -1,18 +1,13 @@
 <?php
 $theme = empty($_GET['theme']) ? '' : $_GET['theme'];
 $file = empty($_GET['file']) ? '' : $_GET['file'];
-    /**
-     * 获取评论模板
-     *
-     * @param template owner 为博主 guest 为访客
-     * @return false|string
-     */
+//获取评论模板
 function getTemplate($templateDir = 'default',$template = 'owner.html')
     {
         $filePath = dirname(__FILE__) . '/' . $templateDir . '/' . $template;
 
         if (!file_exists($filePath)) {//如果模板文件缺失就调用根目录下的default文件夹中用于垫底的模板
-            $filePath = dirname(__FILE__) . '/default/' . $template;
+             return '预览的主题文件夹或主题文件不存在';
         }
 
 $content=file_get_contents($filePath);
@@ -81,16 +76,9 @@ $search = array(
 <meta charset="UTF-8">
 <meta name="renderer" content="webkit">
 <meta name="viewport" content="width=device-width,user-scalable=no,viewport-fit=cover,initial-scale=1, maximum-scale=1">
-<title>预览<?php echo $file; ?></title>
+<title>预览<?php echo $file; ?> - <?php echo $theme; ?>主题</title>
 </head>
 <body>
-    
-<?php 
-if(empty($theme)||empty($file)){
-    echo '预览的主题文件夹或主题文件不存在';
-}else{
-    echo getTemplate($theme,$file);
-} ?>
-    
+<?php echo getTemplate($theme,$file);?>
 </body>
 </html>
