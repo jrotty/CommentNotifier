@@ -174,7 +174,7 @@ $('.'+$("#tuisongtype :radio:checked").val()).show();
         $api_section->html('<h2>API发送设置</h2>');
         $form->addItem($ali_section);
         // 发件api
-        $api_url = new Form\Element\Text('api_url', NULL, NULL, _t('api地址'), _t('请填写用于发送的api链接，需要服务器支持curl函数，部分虚拟主机可能并不能用curl,自己api将插件目录下的zemailapi文件夹放到用于构建api的服务器，然后配置config.php文件即可<br>公益API：https://api.typecho.work/mail/?auth=storetypechowork （仅用于测试，随时可能倒闭）'));
+        $api_url = new Form\Element\Text('api_url', NULL, NULL, _t('api地址'), _t('请填写用于发送的api链接，需要服务器支持curl函数，部分虚拟主机可能并不能用curl,自己api将插件目录下的zemailapi文件夹放到用于构建api的服务器，然后配置config.php文件即可<br>公益API：https://typecho.fans/mailapi/mail/?auth=storetypechofans （仅用于测试，随时可能倒闭）'));
         $form->addInput($api_url);
         
         $api_url->setAttribute('class', 'typecho-option api');
