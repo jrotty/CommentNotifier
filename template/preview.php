@@ -53,11 +53,11 @@ $search = array(
             date('Y-m-d H:i:s'),
             '这个插件真好用！',
             $demouser[$index1]['name'],
-            'bssf@qq.com',
+            '10000@qq.com',
             $demouser[$index1]['md5'],
-            '192.168.1.1',
+            '172.0.0.1',
             'https://github.com/jrotty/CommentNotifier',
-            'https://typecho.work',
+            'https://typecho.fans',
             '泽泽社',
             $demouser[$index2]['name'],
             '这个插件真好用!',
@@ -65,7 +65,7 @@ $search = array(
             date('Y-m-d H:i:s'),
             $demouser[$index2]['md5'],
             './' . $templateDir.'/',
-            'https://typecho.work',
+            'https://typecho.fans',
             '通过'
         );
         return str_replace($search, $replace, $content);
