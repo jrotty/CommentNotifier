@@ -2,7 +2,7 @@
 
 #### 项目介绍
 
-Typecho博客评论邮件提醒，支持异步回调（异步回调优点就是减小对博客评论提交速度的影响），支持编辑邮件模板，支持第三方开发邮件模板，发信方式支持SMTP与阿里云邮箱推送
+Typecho博客评论邮件提醒，支持异步回调（异步回调优点就是减小对博客评论提交速度的影响），支持编辑邮件模板，支持第三方开发邮件模板，发信方式支持SMTP与阿里云邮箱推送，支持通过邮箱进行账号密码找回功能
 
 #### 安装教程
 
@@ -52,3 +52,5 @@ Typecho博客评论邮件提醒，支持异步回调（异步回调优点就是�
 [https://github.com/typecho-fans/plugins/tree/master/CommentToMail](https://github.com/typecho-fans/plugins/tree/master/CommentToMail)
 
 [https://github.com/ylqjgm/LoveKKComment/](https://github.com/ylqjgm/LoveKKComment/)
+
+[https://github.com/mhcyong/Passport](https://github.com/mhcyong/Passport)

@@ -25,7 +25,7 @@ require dirname(__FILE__) . '/PHPMailer/Exception.php';
  * 
  * @package CommentNotifier
  * @author 泽泽社长
- * @version 1.8.5
+ * @version 1.9.0
  * @link https://github.com/jrotty/CommentNotifier
  */
 
@@ -50,6 +50,10 @@ class Plugin implements PluginInterface
         Edit::pluginHandle()->mark = __CLASS__ . '::mark'; // 后台标记评论状态完成接口
         Helper::addPanel(1, self::$panel, '评论邮件提醒外观', '评论邮件提醒主题列表', 'administrator');
         Helper::addRoute("zemail","/zemail","CommentNotifier_Action",'action');
+        
+        Helper::addRoute('password_forgot', '/password/forgot', 'CommentNotifier_Widget', 'doForgot');
+        Helper::addRoute('password_reset', '/password/reset', 'CommentNotifier_Widget', 'doReset');
+        \Typecho\Plugin::factory('admin/footer.php')->end =  __CLASS__ . '::footerjs';
         return _t('请配置邮箱SMTP选项!');
     }
 
@@ -64,6 +68,9 @@ class Plugin implements PluginInterface
     {
         Helper::removePanel(1, self::$panel);
         Helper::removeRoute("zemail");
+        
+        Helper::removeRoute('password_reset');
+        Helper::removeRoute('password_forgot');
     }
 
     /**
@@ -224,6 +231,16 @@ $('.'+$("#tuisongtype :radio:checked").val()).show();
         );
         $t->setAttribute('class', 'hidden');
         $form->addInput($t);
+        
+        
+        $layout = new Layout();
+        $layout->html(_t('<h3>拓展功能:</h3>'));
+        $form->addItem($layout);
+        
+        $tool = new Form\Element\Checkbox('tool', [
+            'passport' => _t('密码找回功能'),
+        ], [], _t('周边能力拓展'), _t('密码找回功能开启后会在typecho默认登录页面插入“忘记密码”的按钮，其他位置如需适配，找回链接为：你的域名/password/forgot 请自行添加'));
+        $form->addInput($tool->multiMode());
     }
 
     /**
@@ -436,7 +453,7 @@ public static function zemail($param)
         $apiurl=$plugin->api_url;
         $smtptype='curl';
         }
-        
+        $flag = FALSE;
 if($smtptype=="go"){
 try {
             $from = $plugin->from; // 发件邮箱
@@ -454,7 +471,7 @@ try {
             $mail->Port = $plugin->SMTPPort; // SMTP 端口
 
             $mail->setFrom($from, $fromName);
-            $mail->addAddress($param['to'], $paramT['fromName']); // 收件人
+            $mail->addAddress($param['to'], $param['fromName']); // 收件人
             $mail->Subject =$param['subject'];
 
             $mail->isHTML(); // 邮件为HTML格式
@@ -471,7 +488,7 @@ try {
                     $data = PHP_EOL . $at . ' 发送成功! ';
                     $data .= ' 发件人:' . $fromName;
                     $data .= ' 发件邮箱:' . $from;
-                    $data .= ' 接收人:' . $paramT['fromName'];
+                    $data .= ' 接收人:' . $param['fromName'];
                     $data .= ' 接收邮箱:' . $param['to'] . PHP_EOL;
                 }
                 $fileName = dirname(__FILE__) . '/log.txt';
@@ -895,5 +912,26 @@ try {
         }
         // 去除第一个&
         return substr($str, 0, -1);
+    }
+    
+    public static function footerjs()
+    {
+        $plugin = Options::alloc()->plugin('CommentNotifier');
+        if(!empty($plugin->tool) && in_array('passport', $plugin->tool)){
+        \Widget\User::alloc()->to($user);
+        if (!$user->hasLogin()&&strpos(Helper::options()->request->getRequestUrl(), "/login.php") !== false){
+            $url=Helper::options()->siteUrl.'password/forgot'; 
+            ?>
+            <style>
+                    form p:last-of-type {
+                    display: flex;
+                    justify-content: space-between;
+                    }
+            </style>
+            <script>
+            var html='<a href="<?php echo $url;?>">忘记密码？</a>';
+            $("form p:last").append(html); 
+            </script>
+            <?php }}
     }
 }
