@@ -73,26 +73,26 @@ class CommentNotifier_Widget extends Typecho_Widget
             }
 
             $db = Typecho_Db::get();
-            $user = $db->fetchRow($db->select()->from('table.users')->where('mail = ?', $this->request->mail));
+            $userRow = $db->fetchRow($db->select()->from('table.users')->where('mail = ?', $this->request->mail));
 
-            if (empty($user)) {
+            if (empty($userRow)) {
                 // 返回没有该用户
                 $this->notice->set(_t('该邮箱还没有注册'), 'error');
                 return false;
             }
              
             /* 生成重置密码地址 */
-            $hashString = $user['name'] . $user['mail'] . $user['password'];
+            $hashString = $userRow['name'] . $userRow['mail'] . $userRow['password'];
             $hashValidate = Typecho_Common::hash($hashString);
-            $token = base64_encode($user['uid'] . '.' . $hashValidate . '.' . $this->options->gmtTime);
+            $token = base64_encode($userRow['uid'] . '.' . $hashValidate . '.' . $this->options->gmtTime);
             $url = Typecho_Common::url('/password/reset?token=' . $token, $this->options->index);
 
 
             /* 发送重置密码地址 */
-            $param['to'] = $user['mail']; // 收件地址
-            $param['fromName'] = $user['name']; // 收件人名称
+            $param['to'] = $userRow['mail']; // 收件地址
+            $param['fromName'] = $userRow['name']; // 收件人名称
             $param['subject'] = '密码重置' . date('Y-m-d H:i:s');// 邮件标题
-            $param['html'] = '<p>' . $user['name'] . ' 您好，您申请了重置登录密码。</p>'
+            $param['html'] = '<p>' . $userRow['name'] . ' 您好，您申请了重置登录密码。</p>'
                 . '<br><p>请在 1 小时内点击此链接以完成重置 <a href="' . $url . '">' . $url . '</a></p>'
                 . '<br><p>如非本人操作请忽略本条消息！</p>';    // 邮件内容
             CommentNotifier_Plugin::send($param);
@@ -123,9 +123,9 @@ class CommentNotifier_Widget extends Typecho_Widget
         }
 
         $db = Typecho_Db::get();
-        $user = $db->fetchRow($db->select()->from('table.users')->where('uid = ?', $uid));
+        $userRow = $db->fetchRow($db->select()->from('table.users')->where('uid = ?', $uid));
 
-        $hashString = $user['name'] . $user['mail'] . $user['password'];
+        $hashString = $userRow['name'] . $userRow['mail'] . $userRow['password'];
         $hashValidate = Typecho_Common::hashValidate($hashString, $hashValidate);
 
         if (!$hashValidate) {
@@ -149,7 +149,7 @@ class CommentNotifier_Widget extends Typecho_Widget
 
             $update = $db->query($db->update('table.users')
                 ->rows(array('password' => $password))
-                ->where('uid = ?', $user['uid']));
+                ->where('uid = ?', $userRow['uid']));
 
             if (!$update) {
                 $this->notice->set(_t('重置密码失败'), 'error');
