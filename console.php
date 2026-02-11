@@ -76,7 +76,16 @@ class CommentNotifier_Console extends Typecho_Widget
         $this->_dir = dirname(__FILE__);
         $template = Plugin::configStr('template', 'default');
         $path = '/template/' . $template;
-        $files = glob($this->_dir . $path . '/*.{html,HTML}', GLOB_BRACE);
+        
+        // 兼容无GLOB_BRACE的环境（如Alpine Linux）
+        if (defined('GLOB_BRACE')) {
+            $files = glob($this->_dir . $path . '/*.{html,HTML}', GLOB_BRACE);
+        } else {
+        // 分别匹配小写和大写后缀，合并结果并去重
+            $files_html = glob($this->_dir . $path . '/*.html') ?: [];
+           $files_HTML = glob($this->_dir . $path . '/*.HTML') ?: [];
+           $files = array_merge($files_html, $files_HTML);
+       }
 
         $this->_currentFile = $this->request->get('file', 'owner.html');
 
@@ -160,7 +169,6 @@ class CommentNotifier_Console extends Typecho_Widget
             <h2><?= $title ?></h2>
         </div>
         <div class="row typecho-page-main" role="main">
-            <div class="col-mb-12">
                 <ul class="typecho-option-tabs fix-tabs clearfix">
                     <li<?= ($current == 'index' ? ' class="current"' : '') ?>><a
                             href="<?php $options->adminUrl('extending.php?panel=' . CommentNotifier_Plugin::$panel . '&act=index'); ?>">
@@ -174,7 +182,6 @@ class CommentNotifier_Console extends Typecho_Widget
                         <a href="<?php $options->adminUrl('options-plugin.php?config=CommentNotifier') ?>"><?php _e('插件设置'); ?></a>
                     </li>
                 </ul>
-            </div>
 
             <?php if ($current == 'index'): ?>
 
@@ -186,7 +193,7 @@ class CommentNotifier_Console extends Typecho_Widget
                 /** @var CommentNotifier_Console $files */
                 Widget::widget('CommentNotifier_Console')->to($files);
                 ?>
-                <div class="typecho-edit-theme">
+                <div class="typecho-edit-theme row w-100">
                     <div class="col-mb-12 col-tb-8 col-9 content">
                         <form method="post" name="theme" id="theme"
                               action="<?php $options->adminUrl('extending.php?panel=' . CommentNotifier_Plugin::$panel . '&act=theme&theme=' .$othertheme. '&file=' . $files->file); ?>">
